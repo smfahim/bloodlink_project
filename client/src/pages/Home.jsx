@@ -2,7 +2,8 @@ import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import Stats from "../components/Stats";
 import Search from "../components/Search";
-import DonorList from "../components/DonorList";  // ← ADD THIS
+import DonorList from "../components/DonorList";
+import UrgentRequests from "../components/UrgentRequests";  // ← ADD THIS
 
 const Home = () => {
   return (
@@ -11,7 +12,8 @@ const Home = () => {
       <Hero />
       <Stats />
       <Search />
-      <DonorList />   {/* ← ADD THIS */}
+      <DonorList />
+      <UrgentRequests />  
     </>
   );
 };
