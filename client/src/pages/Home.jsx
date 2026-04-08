@@ -3,7 +3,8 @@ import Hero from "../components/Hero";
 import Stats from "../components/Stats";
 import Search from "../components/Search";
 import DonorList from "../components/DonorList";
-import UrgentRequests from "../components/UrgentRequests";  // ← ADD THIS
+import UrgentRequests from "../components/UrgentRequests";
+import Footer from "../components/Footer";       // ← ADD THIS
 
 const Home = () => {
   return (
@@ -13,7 +14,8 @@ const Home = () => {
       <Stats />
       <Search />
       <DonorList />
-      <UrgentRequests />  
+      <UrgentRequests />
+      <Footer />                                  
     </>
   );
 };
