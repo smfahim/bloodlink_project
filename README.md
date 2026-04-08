@@ -223,8 +223,8 @@ NODE_ENV=development
 Student ID: 232-112-002
 Department of Computer Science & Engineering
 
-- GitHub: [@your-username](https://github.com/your-username)
-- Email: your-email@example.com
+- GitHub: [@smfahim](https://github.com?smfahim)
+- Email: smfahim.ahmed28@gmail.com
 
 ---
 
