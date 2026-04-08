@@ -3,21 +3,21 @@ import React from "react";
 const donors = [
   {
     id: 1,
-    name: "Rahim Uddin",
+    name: "S.M. Fahim Ahmed",
     bloodGroup: "A+",
     status: "Available",
-    city: "Dhaka",
+    city: "Habiganj",
   },
   {
     id: 2,
-    name: "Sumaiya Khan",
+    name: "Halima Yesmin Omi",
     bloodGroup: "O+",
     status: "Available",
     city: "Sylhet",
   },
   {
     id: 3,
-    name: "Tanvir Hossain",
+    name: "Tanjim Hasan",
     bloodGroup: "B+",
     status: "Available",
     city: "Chittagong",

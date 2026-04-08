@@ -1,22 +1,22 @@
-function Stats() {
+import React from "react";
+
+const stats = [
+  { value: "1,240+", label: "Donors" },
+  { value: "860+",   label: "Lives Saved" },
+  { value: "64",     label: "Cities" },
+];
+
+const Stats = () => {
   return (
-    <div className="stats">
-      <div className="stat">
-        <div className="stat-num">1,240+</div>
-        <div className="stat-label">Donors</div>
-      </div>
-
-      <div className="stat">
-        <div className="stat-num">860+</div>
-        <div className="stat-label">Lives Saved</div>
-      </div>
-
-      <div className="stat">
-        <div className="stat-num">64</div>
-        <div className="stat-label">Cities</div>
-      </div>
-    </div>
+    <section className="stats">
+      {stats.map((stat, index) => (
+        <div className="stat-item" key={index}>
+          <h2 className="stat-value">{stat.value}</h2>
+          <p className="stat-label">{stat.label}</p>
+        </div>
+      ))}
+    </section>
   );
-}
+};
 
 export default Stats;

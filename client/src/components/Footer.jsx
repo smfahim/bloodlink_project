@@ -12,8 +12,7 @@ const Footer = () => {
           <h2 className="footer-logo">
             Blood<span className="footer-logo-accent">Link</span>
           </h2>
-          <p className="footer-tagline">
-            Connecting blood donors with people in need. Fast, free, and life-saving.
+          <p className="footer-tagline">Connecting blood donors with people in need. Fast, free, and life-saving.
           </p>
           <div className="footer-blood-groups">
             {bloodGroups.map((bg) => (
