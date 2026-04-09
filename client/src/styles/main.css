@@ -1196,3 +1196,427 @@ body {
     max-width: 100%;
   }
 }
+
+/* ─── DASHBOARD ─────── */
+.dashboard-page {
+  display: flex;
+  min-height: 100vh;
+  background-color: #0a0a0a;
+}
+
+/* ── Sidebar ── */
+.dashboard-sidebar {
+  width: 260px;
+  background-color: #111111;
+  border-right: 1px solid #1e1e1e;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 20px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  flex-shrink: 0;
+}
+
+.sidebar-logo {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-decoration: none;
+  margin-bottom: 32px;
+  display: block;
+}
+
+/* Sidebar User */
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 28px;
+}
+
+.sidebar-avatar {
+  width: 44px;
+  height: 44px;
+  background-color: #cc0000;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.sidebar-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 3px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-email {
+  font-size: 0.75rem;
+  color: #666666;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sidebar Nav */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.sidebar-nav-item {
+  background: none;
+  border: none;
+  color: #888888;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 11px 14px;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-nav-item:hover {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.sidebar-nav-item.active {
+  background-color: rgba(204, 0, 0, 0.15);
+  color: #ff4444;
+  border-left: 3px solid #cc0000;
+}
+
+/* Logout */
+.sidebar-logout {
+  background: none;
+  border: 1px solid #2a2a2a;
+  color: #666666;
+  font-size: 0.88rem;
+  padding: 10px 14px;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 16px;
+}
+
+.sidebar-logout:hover {
+  border-color: #cc0000;
+  color: #ff4444;
+}
+
+/* ── Main Content ── */
+.dashboard-main {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+.dash-section {
+  max-width: 860px;
+  animation: authFadeIn 0.4s ease forwards;
+}
+
+.dash-heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+}
+
+.dash-subheading {
+  font-size: 0.88rem;
+  color: #666666;
+  margin: 0 0 28px 0;
+}
+
+.dash-tab-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+/* ── Stat Cards ── */
+.dash-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.dash-card {
+  background-color: #111111;
+  border: 1px solid #1e1e1e;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color 0.2s;
+}
+
+.dash-card:hover {
+  border-color: #cc0000;
+}
+
+.dash-card-icon {
+  font-size: 1.6rem;
+}
+
+.dash-card-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+  line-height: 1;
+}
+
+.dash-card-label {
+  font-size: 0.75rem;
+  color: #666666;
+  margin: 0;
+}
+
+/* ── Status Cards ── */
+.dash-status-card {
+  background-color: #111111;
+  border: 1px solid #1e1e1e;
+  border-radius: 12px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.dash-status-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+}
+
+.dash-status-sub {
+  font-size: 0.82rem;
+  color: #666666;
+  margin: 0;
+}
+
+.dash-status-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.badge-active {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.badge-inactive {
+  background-color: rgba(204, 0, 0, 0.1);
+  color: #ff4444;
+  border: 1px solid rgba(204, 0, 0, 0.2);
+}
+
+/* ── Profile Form ── */
+.profile-form {
+  background-color: #111111;
+  border: 1px solid #1e1e1e;
+  border-radius: 12px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dark-input {
+  background-color: #1a1a1a !important;
+  border-color: #2a2a2a !important;
+  color: #ffffff !important;
+}
+
+.dark-input:focus {
+  border-color: #cc0000 !important;
+}
+
+/* ── Table ── */
+.dash-table-wrapper {
+  background-color: #111111;
+  border: 1px solid #1e1e1e;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dash-table th {
+  background-color: #1a1a1a;
+  color: #888888;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 14px 20px;
+  text-align: left;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+.dash-table td {
+  padding: 14px 20px;
+  font-size: 0.9rem;
+  color: #cccccc;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.dash-table tr:last-child td {
+  border-bottom: none;
+}
+
+.dash-table tr:hover td {
+  background-color: #161616;
+}
+
+.table-blood-badge {
+  background-color: #cc0000;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.table-status {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.status-active {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.status-closed {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #666666;
+}
+
+/* ─── DASHBOARD RESPONSIVE ───── */
+@media (max-width: 900px) {
+  .dashboard-sidebar {
+    display: none;
+  }
+
+  .dashboard-main {
+    padding: 24px 20px;
+  }
+
+  .dash-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .dash-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── ADMIN SPECIFIC ──── */
+.admin-badge-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 28px;
+}
+
+.dash-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #aaaaaa;
+  margin: 28px 0 14px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Role Badge */
+.role-badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.role-donor {
+  background-color: rgba(204, 0, 0, 0.1);
+  color: #ff4444;
+  border: 1px solid rgba(204, 0, 0, 0.2);
+}
+
+.role-user {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #888888;
+  border: 1px solid #2a2a2a;
+}
+
+/* Urgency badge green variant */
+.badge-normal-green {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* Table Action Buttons */
+.btn-table-action {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete {
+  background-color: rgba(204, 0, 0, 0.1);
+  color: #ff4444;
+  border: 1px solid rgba(204, 0, 0, 0.2);
+}
+
+.btn-delete:hover {
+  background-color: #cc0000;
+  color: #ffffff;
+}
