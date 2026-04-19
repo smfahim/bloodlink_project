@@ -9,20 +9,20 @@ const userSchema = new mongoose.Schema(
       trim:     true,
     },
     email: {
-      type:     String,
-      required: [true, "Email is required"],
-      unique:   true,
+      type:      String,
+      required:  [true, "Email is required"],
+      unique:    true,
       lowercase: true,
-      trim:     true,
+      trim:      true,
     },
     password: {
-      type:     String,
-      required: [true, "Password is required"],
+      type:      String,
+      required:  [true, "Password is required"],
       minlength: 6,
     },
     bloodGroup: {
-      type: String,
-      enum: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
+      type:     String,
+      enum:     ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
       required: [true, "Blood group is required"],
     },
     city: {
@@ -31,8 +31,8 @@ const userSchema = new mongoose.Schema(
       trim:     true,
     },
     phone: {
-      type:  String,
-      trim:  true,
+      type: String,
+      trim: true,
     },
     isDonor: {
       type:    Boolean,
@@ -59,13 +59,19 @@ const userSchema = new mongoose.Schema(
 
 // Hash password before saving
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  const salt    = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
+  if (!this.isModified("password")) {
+    return next();
+  }
+  try {
+    const salt    = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    return next();
+  } catch (err) {
+    return next(err);
+  }
 });
 
-// Compare password method
+// Compare password
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
