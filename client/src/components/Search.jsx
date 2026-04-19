@@ -1,14 +1,18 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
 const Search = () => {
   const [selectedGroup, setSelectedGroup] = useState("");
-  const [city, setCity] = useState("");
+  const [city, setCity]                   = useState("");
+  const navigate                          = useNavigate();
 
   const handleSearch = () => {
-    console.log("Searching:", selectedGroup, city);
-    // wire to API later
+    const params = new URLSearchParams();
+    if (selectedGroup) params.append("bloodGroup", selectedGroup);
+    if (city)          params.append("city", city);
+    navigate(`/donors?${params.toString()}`);
   };
 
   return (
@@ -36,6 +40,7 @@ const Search = () => {
             placeholder="City (e.g. Dhaka)"
             value={city}
             onChange={(e) => setCity(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           />
         </div>
 

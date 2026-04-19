@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import API from "../api/axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -6,17 +7,25 @@ import Footer from "../components/Footer";
 const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
 const Donors = () => {
-  const [donors, setDonors]           = useState([]);
-  const [loading, setLoading]         = useState(false);
-  const [error, setError]             = useState("");
-  const [bloodGroup, setBloodGroup]   = useState("");
-  const [city, setCity]               = useState("");
-  const [searched, setSearched]       = useState(false);
+  const [donors, setDonors]         = useState([]);
+  const [loading, setLoading]       = useState(false);
+  const [error, setError]           = useState("");
+  const [bloodGroup, setBloodGroup] = useState("");
+  const [city, setCity]             = useState("");
+  const [searched, setSearched]     = useState(false);
 
-  // Load all donors on page load
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // URL params থেকে auto search — Search.jsx থেকে আসলে
   useEffect(() => {
-    fetchDonors();
-  }, []);
+    const params = new URLSearchParams(location.search);
+    const bg     = params.get("bloodGroup") || "";
+    const ct     = params.get("city")       || "";
+    setBloodGroup(bg);
+    setCity(ct);
+    fetchDonors(bg, ct);
+  }, [location.search]);
 
   const fetchDonors = async (bg = "", ct = "") => {
     setLoading(true);
@@ -37,13 +46,16 @@ const Donors = () => {
   };
 
   const handleSearch = () => {
-    fetchDonors(bloodGroup, city);
+    const params = new URLSearchParams();
+    if (bloodGroup) params.append("bloodGroup", bloodGroup);
+    if (city)       params.append("city", city);
+    navigate(`/donors?${params.toString()}`);
   };
 
   const handleReset = () => {
     setBloodGroup("");
     setCity("");
-    fetchDonors();
+    navigate("/donors");
   };
 
   return (
@@ -82,7 +94,10 @@ const Donors = () => {
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           />
 
-          <button className="btn-search donors-btn" onClick={handleSearch}>
+          <button
+            className="btn-search donors-btn"
+            onClick={handleSearch}
+          >
             🔍 Search
           </button>
 

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
   const [visible, setVisible] = useState(false);
+  const navigate              = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), 100);
@@ -44,10 +46,16 @@ const Hero = () => {
 
         {/* Buttons */}
         <div className="hero-buttons">
-          <button className="btn-find">
+          <button
+            className="btn-find"
+            onClick={() => navigate("/donors")}
+          >
             🔍 Find Donor
           </button>
-          <button className="btn-become">
+          <button
+            className="btn-become"
+            onClick={() => navigate("/register")}
+          >
             🩸 Become Donor
           </button>
         </div>
