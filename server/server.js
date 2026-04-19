@@ -18,7 +18,7 @@ app.use(express.json());
 app.use("/api/auth",     require("./routes/authRoutes"));
 app.use("/api/donors",   require("./routes/donorRoutes"));
 app.use("/api/requests", require("./routes/requestRoutes"));
-
+app.use("/api/admin",    require("./routes/adminRoutes"));
 // Health check
 app.get("/", (req, res) => {
   res.json({ message: "BloodLink API is running ✅" });

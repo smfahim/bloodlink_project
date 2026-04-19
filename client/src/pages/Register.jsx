@@ -1,72 +1,77 @@
 import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
+  const { register }   = useAuth();
+  const navigate       = useNavigate();
+  const [error, setError]     = useState("");
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    bloodGroup: "",
-    city: "",
-    phone: "",
-    isDonor: false,
+    name: "", email: "", password: "",
+    confirmPassword: "", bloodGroup: "",
+    city: "", phone: "", isDonor: false,
   });
 
   const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
+    setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
+      return setError("Passwords do not match!");
     }
-    console.log("Register:", formData);
-    // API call later
+    if (!formData.bloodGroup) {
+      return setError("Please select a blood group");
+    }
+
+    setLoading(true);
+    try {
+      await register(formData);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="auth-page">
       <div className="auth-card register-card">
 
-        {/* Logo */}
         <div className="auth-logo">
           Blood<span className="logo-accent">Link</span>
         </div>
 
-        {/* Title */}
         <h2 className="auth-title">Create Account</h2>
         <p className="auth-subtitle">Join BloodLink and save lives today</p>
 
-        {/* Form */}
+        {error && <div className="auth-error">{error}</div>}
+
         <div className="auth-form">
 
-          {/* Row 1 — Name + Phone */}
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Full Name</label>
               <input
-                type="text"
-                name="name"
+                type="text" name="name"
                 className="form-input"
                 placeholder="Your full name"
                 value={formData.name}
                 onChange={handleChange}
               />
             </div>
-
             <div className="form-group">
               <label className="form-label">Phone Number</label>
               <input
-                type="text"
-                name="phone"
+                type="text" name="phone"
                 className="form-input"
                 placeholder="01XXXXXXXXX"
                 value={formData.phone}
@@ -75,12 +80,10 @@ const Register = () => {
             </div>
           </div>
 
-          {/* Email */}
           <div className="form-group">
             <label className="form-label">Email Address</label>
             <input
-              type="email"
-              name="email"
+              type="email" name="email"
               className="form-input"
               placeholder="Enter your email"
               value={formData.email}
@@ -88,7 +91,6 @@ const Register = () => {
             />
           </div>
 
-          {/* Row 2 — Blood Group + City */}
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Blood Group</label>
@@ -104,12 +106,10 @@ const Register = () => {
                 ))}
               </select>
             </div>
-
             <div className="form-group">
               <label className="form-label">City</label>
               <input
-                type="text"
-                name="city"
+                type="text" name="city"
                 className="form-input"
                 placeholder="e.g. Dhaka"
                 value={formData.city}
@@ -118,25 +118,21 @@ const Register = () => {
             </div>
           </div>
 
-          {/* Row 3 — Password + Confirm */}
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Password</label>
               <input
-                type="password"
-                name="password"
+                type="password" name="password"
                 className="form-input"
                 placeholder="Create password"
                 value={formData.password}
                 onChange={handleChange}
               />
             </div>
-
             <div className="form-group">
               <label className="form-label">Confirm Password</label>
               <input
-                type="password"
-                name="confirmPassword"
+                type="password" name="confirmPassword"
                 className="form-input"
                 placeholder="Repeat password"
                 value={formData.confirmPassword}
@@ -145,12 +141,9 @@ const Register = () => {
             </div>
           </div>
 
-          {/* Donor Checkbox */}
           <div className="form-checkbox-group">
             <input
-              type="checkbox"
-              name="isDonor"
-              id="isDonor"
+              type="checkbox" name="isDonor" id="isDonor"
               className="form-checkbox"
               checked={formData.isDonor}
               onChange={handleChange}
@@ -160,24 +153,21 @@ const Register = () => {
             </label>
           </div>
 
-          {/* Submit */}
-          <button className="btn-auth" onClick={handleSubmit}>
-            Create Account
+          <button
+            className="btn-auth"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
 
         </div>
 
-        {/* Divider */}
-        <div className="auth-divider">
-          <span>or</span>
-        </div>
+        <div className="auth-divider"><span>or</span></div>
 
-        {/* Switch */}
         <p className="auth-switch">
           Already have an account?{" "}
-          <a href="/login" className="auth-switch-link">
-            Login here
-          </a>
+          <Link to="/login" className="auth-switch-link">Login here</Link>
         </p>
 
       </div>

@@ -1,35 +1,50 @@
 import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const { login }      = useAuth();
+  const navigate       = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError]       = useState("");
+  const [loading, setLoading]   = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login:", formData);
-    // API call later
+    setError("");
+    setLoading(true);
+    try {
+      const user = await login(formData);
+      if (user.isAdmin) {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="auth-page">
       <div className="auth-card">
 
-        {/* Logo */}
         <div className="auth-logo">
           Blood<span className="logo-accent">Link</span>
         </div>
 
-        {/* Title */}
         <h2 className="auth-title">Welcome Back</h2>
         <p className="auth-subtitle">Login to your BloodLink account</p>
 
-        {/* Form */}
+        {/* Error Message */}
+        {error && <div className="auth-error">{error}</div>}
+
         <div className="auth-form">
 
           <div className="form-group">
@@ -59,23 +74,23 @@ const Login = () => {
             </a>
           </div>
 
-          <button className="btn-auth" onClick={handleSubmit}>
-            Login
+          <button
+            className="btn-auth"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? "Logging in..." : "Login"}
           </button>
 
         </div>
 
-        {/* Divider */}
-        <div className="auth-divider">
-          <span>or</span>
-        </div>
+        <div className="auth-divider"><span>or</span></div>
 
-        {/* Switch */}
         <p className="auth-switch">
           Don't have an account?{" "}
-          <a href="/register" className="auth-switch-link">
+          <Link to="/register" className="auth-switch-link">
             Register here
-          </a>
+          </Link>
         </p>
 
       </div>

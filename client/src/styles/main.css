@@ -1620,3 +1620,353 @@ body {
   background-color: #cc0000;
   color: #ffffff;
 }
+
+/* ─── AUTH ERROR MESSAGE ────────── */
+.auth-error {
+  background-color: rgba(204, 0, 0, 0.1);
+  border: 1px solid rgba(204, 0, 0, 0.3);
+  color: #ff4444;
+  font-size: 0.85rem;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+/* ─── BTN DISABLED ─────────── */
+.btn-auth:disabled {
+  background-color: #666666;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ─── DONORS PAGE ──────────────── */
+.donors-page {
+  min-height: 80vh;
+  background-color: #f4f4f4;
+  padding: 50px 40px;
+}
+
+.donors-header {
+  max-width: 1000px;
+  margin: 0 auto 30px auto;
+  text-align: center;
+}
+
+.donors-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #111111;
+  margin: 0 0 8px 0;
+}
+
+.donors-subtitle {
+  font-size: 0.95rem;
+  color: #666666;
+  margin: 0;
+}
+
+/* Search Box */
+.donors-search-box {
+  max-width: 1000px;
+  margin: 0 auto 32px auto;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: #ffffff;
+  padding: 20px 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  flex-wrap: wrap;
+}
+
+.donors-select,
+.donors-input {
+  flex: 1;
+  min-width: 160px;
+}
+
+.donors-btn {
+  width: auto !important;
+  padding: 13px 28px !important;
+  white-space: nowrap;
+}
+
+.btn-reset {
+  background: none;
+  border: 1.5px solid #dddddd;
+  color: #888888;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.btn-reset:hover {
+  border-color: #cc0000;
+  color: #cc0000;
+}
+
+/* Results */
+.donors-results {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.donors-count {
+  font-size: 0.9rem;
+  color: #666666;
+  margin: 0 0 16px 0;
+}
+
+.donors-count strong {
+  color: #111111;
+}
+
+/* Loading */
+.donors-loading {
+  text-align: center;
+  padding: 60px 0;
+  color: #888888;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #eeeeee;
+  border-top-color: #cc0000;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error */
+.donors-error {
+  background-color: rgba(204, 0, 0, 0.08);
+  border: 1px solid rgba(204, 0, 0, 0.2);
+  color: #cc0000;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* Empty State */
+.donors-empty {
+  text-align: center;
+  padding: 80px 0;
+  color: #888888;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.donors-empty h3 {
+  font-size: 1.1rem;
+  color: #444444;
+  margin: 0 0 8px 0;
+}
+
+.donors-empty p {
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+/* Donor Phone */
+.donor-phone {
+  font-size: 0.82rem;
+  color: #888888;
+  margin: 4px 0 0 0;
+}
+
+/* ─── DONORS PAGE RESPONSIVE ────── */
+@media (max-width: 768px) {
+  .donors-page {
+    padding: 30px 20px;
+  }
+
+  .donors-search-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .donors-btn {
+    width: 100% !important;
+  }
+
+  .btn-reset {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ─── REQUESTS PAGE ──────────────────────────────────────────── */
+.requests-page {
+  min-height: 80vh;
+  background-color: #f9f9f9;
+  padding: 50px 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.requests-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-post-request {
+  max-width: 200px !important;
+  padding: 11px 20px !important;
+  white-space: nowrap;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.request-message {
+  font-size: 0.83rem;
+  color: #777777;
+  margin: 4px 0 0 0;
+}
+
+.request-date {
+  font-size: 0.78rem;
+  color: #aaaaaa;
+  margin: 4px 0 0 0;
+}
+
+/* ─── MODAL ──────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+  animation: authFadeIn 0.2s ease forwards;
+}
+
+.modal-card {
+  background: #111111;
+  border: 1px solid #222222;
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: authFadeIn 0.3s ease forwards;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: 1px solid #333333;
+  color: #888888;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  border-color: #cc0000;
+  color: #ff4444;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 90px;
+  font-family: inherit;
+}
+
+/* Success Message */
+.auth-success {
+  background-color: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  color: #22c55e;
+  font-size: 0.85rem;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+/* ─── REQUESTS RESPONSIVE ────────────────────────────────────── */
+@media (max-width: 768px) {
+  .requests-page {
+    padding: 30px 20px;
+  }
+
+  .requests-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-post-request {
+    max-width: 100% !important;
+    text-align: center;
+  }
+
+  .modal-card {
+    padding: 24px 18px;
+  }
+}
+
+/* ─── DASHBOARD LOADER ───────────────────────────────────────── */
+.dash-loader {
+  min-height: 100vh;
+  background-color: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: #666666;
+  font-size: 0.9rem;
+}
+
+/* ─── ADMIN ROLE BADGE ───────────────────────────────────────── */
+.role-admin {
+  background-color: rgba(124, 58, 237, 0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
