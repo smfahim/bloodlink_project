@@ -1,17 +1,24 @@
-const dotenv   = require("dotenv");
-dotenv.config(); 
-console.log("MONGO_URI:", process.env.MONGO_URI);                     
+const dotenv    = require("dotenv");
+dotenv.config();
 
-const express  = require("express");
-const cors     = require("cors");
+const express   = require("express");
+const cors      = require("cors");
 const connectDB = require("./config/db");
 
-connectDB();                         
+connectDB();
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// CORS
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://bloodlink-project-two.vercel.app/",
+    /\.vercel\.app$/,
+  ],
+  credentials: true,
+}));
+
 app.use(express.json());
 
 // Routes
@@ -19,6 +26,7 @@ app.use("/api/auth",     require("./routes/authRoutes"));
 app.use("/api/donors",   require("./routes/donorRoutes"));
 app.use("/api/requests", require("./routes/requestRoutes"));
 app.use("/api/admin",    require("./routes/adminRoutes"));
+
 // Health check
 app.get("/", (req, res) => {
   res.json({ message: "BloodLink API is running ✅" });
