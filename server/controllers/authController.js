@@ -1,32 +1,40 @@
 const jwt  = require("jsonwebtoken");
 const User = require("../models/User");
 
-// Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
-// @route  POST /api/auth/register
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, bloodGroup, city, phone, isDonor } = req.body;
+    const {
+      name, email, password,
+      bloodGroup, city, phone, isDonor,
+    } = req.body;
+
+    // Validate
+    if (!name || !email || !password || !bloodGroup || !city) {
+      return res.status(400).json({ message: "Please fill all fields" });
+    }
 
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: "Email already registered" });
     }
 
-    const user = await User.create({
+    const user = new User({
       name,
       email,
       password,
       bloodGroup,
       city,
-      phone,
-      isDonor,
+      phone:   phone   || "",
+      isDonor: isDonor || false,
     });
 
-    res.status(201).json({
+    await user.save();
+
+    return res.status(201).json({
       _id:        user._id,
       name:       user.name,
       email:      user.email,
@@ -36,52 +44,66 @@ const registerUser = async (req, res) => {
       isAdmin:    user.isAdmin,
       token:      generateToken(user._id),
     });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("REGISTER ERROR:", error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
-// @route  POST /api/auth/login
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({ message: "Please fill all fields" });
+    }
+
     const user = await User.findOne({ email });
 
-    if (user && (await user.matchPassword(password))) {
-      res.json({
-        _id:        user._id,
-        name:       user.name,
-        email:      user.email,
-        bloodGroup: user.bloodGroup,
-        city:       user.city,
-        isDonor:    user.isDonor,
-        isAdmin:    user.isAdmin,
-        token:      generateToken(user._id),
-      });
-    } else {
-      res.status(401).json({ message: "Invalid email or password" });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
+
+    const isMatch = user.matchPassword(password);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    return res.json({
+      _id:        user._id,
+      name:       user.name,
+      email:      user.email,
+      bloodGroup: user.bloodGroup,
+      city:       user.city,
+      isDonor:    user.isDonor,
+      isAdmin:    user.isAdmin,
+      token:      generateToken(user._id),
+    });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("LOGIN ERROR:", error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
-// @route  GET /api/auth/me
 const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
-    res.json(user);
+    return res.json(user);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("GETME ERROR:", error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
-// @route  PUT /api/auth/update          ← নতুন যোগ হয়েছে
 const updateProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     user.name  = req.body.name  || user.name;
     user.phone = req.body.phone || user.phone;
@@ -90,7 +112,7 @@ const updateProfile = async (req, res) => {
 
     await user.save();
 
-    res.json({
+    return res.json({
       _id:        user._id,
       name:       user.name,
       email:      user.email,
@@ -100,8 +122,10 @@ const updateProfile = async (req, res) => {
       isDonor:    user.isDonor,
       isAdmin:    user.isAdmin,
     });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("UPDATE ERROR:", error);
+    return res.status(500).json({ message: error.message });
   }
 };
 

@@ -21,11 +21,22 @@ app.use(cors({
 
 app.use(express.json());
 
+// Test route
+app.post("/api/test", (req, res) => {
+  res.json({ message: "Test works!", body: req.body });
+});
+
 // Routes
 app.use("/api/auth",     require("./routes/authRoutes"));
 app.use("/api/donors",   require("./routes/donorRoutes"));
 app.use("/api/requests", require("./routes/requestRoutes"));
 app.use("/api/admin",    require("./routes/adminRoutes"));
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error("GLOBAL ERROR:", err.stack);
+  res.status(500).json({ message: err.message });
+});
 
 // Health check
 app.get("/", (req, res) => {

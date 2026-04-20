@@ -36,8 +36,14 @@ const Register = () => {
       await register(formData);
       navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
-    } finally {
+  console.log("FULL ERROR:", err); //
+
+  setError(
+    err.response?.data?.message ||
+    err.message ||
+    "Registration failed"
+  );
+} finally {
       setLoading(false);
     }
   };

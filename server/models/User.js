@@ -46,34 +46,23 @@ const userSchema = new mongoose.Schema(
       type:    Boolean,
       default: false,
     },
-    lastDonation: {
-      type: Date,
-    },
-    totalDonations: {
-      type:    Number,
-      default: 0,
-    },
+    lastDonation:   { type: Date },
+    totalDonations: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
 
-// Hash password before saving
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    return next();
-  }
-  try {
-    const salt    = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    return next();
-  } catch (err) {
-    return next(err);
-  }
+// ← async সরিয়ে sync করা হয়েছে
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password")) return next();
+  const salt    = bcrypt.genSaltSync(10);
+  this.password = bcrypt.hashSync(this.password, salt);
+  return next();
 });
 
-// Compare password
-userSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
+// ← async সরিয়ে sync করা হয়েছে
+userSchema.methods.matchPassword = function (enteredPassword) {
+  return bcrypt.compareSync(enteredPassword, this.password);
 };
 
 module.exports = mongoose.model("User", userSchema);
