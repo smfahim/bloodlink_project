@@ -52,17 +52,14 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ← async সরিয়ে sync করা হয়েছে
-userSchema.pre("save", function (next) {
-  if (!this.isModified("password")) return next();
+userSchema.pre("save", function () {
+  if (!this.isModified("password")) return;
   const salt    = bcrypt.genSaltSync(10);
   this.password = bcrypt.hashSync(this.password, salt);
-  return next();
 });
 
-// ← async সরিয়ে sync করা হয়েছে
 userSchema.methods.matchPassword = function (enteredPassword) {
   return bcrypt.compareSync(enteredPassword, this.password);
 };
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", userSchema); 
