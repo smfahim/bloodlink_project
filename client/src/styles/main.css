@@ -2370,3 +2370,532 @@ body {
     flex: 1;
   }
 }
+
+/* ─── ABOUT HERO ─────────────────────────────────────────────── */
+.about-hero {
+  background-color: #000000;
+  padding: 80px 80px 60px;
+  position: relative;
+  overflow: hidden;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+}
+
+.contact-hero {
+  background-color: #000000;
+  padding: 80px 80px 60px;
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+}
+
+.about-hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+}
+
+.about-hero-blob.blob-1 {
+  width: 400px;
+  height: 400px;
+  background: #cc0000;
+  opacity: 0.08;
+  top: -100px;
+  left: -100px;
+}
+
+.about-hero-blob.blob-2 {
+  width: 300px;
+  height: 300px;
+  background: #cc0000;
+  opacity: 0.06;
+  bottom: -80px;
+  right: -80px;
+}
+
+.about-hero-content {
+  max-width: 700px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.about-hero-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.about-hero-sub {
+  font-size: 1rem;
+  color: #999999;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 560px;
+}
+
+/* ─── ABOUT STATS ────────────────────────────────────────────── */
+.about-stats {
+  background-color: #cc0000;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 32px 80px;
+  gap: 20px;
+}
+
+.about-stat-card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.about-stat-icon {
+  font-size: 1.6rem;
+}
+
+.about-stat-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1;
+}
+
+.about-stat-label {
+  font-size: 0.82rem;
+  color: #ffcccc;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ─── ABOUT SECTIONS ─────────────────────────────────────────── */
+.about-section {
+  padding: 70px 20px;
+  background-color: #f9f9f9;
+}
+
+.about-section:nth-child(even) {
+  background-color: #ffffff;
+}
+
+.about-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.about-section-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #111111;
+  margin: 0 0 20px 0;
+}
+
+.about-section-text {
+  font-size: 0.97rem;
+  color: #555555;
+  line-height: 1.8;
+  margin: 0 0 16px 0;
+}
+
+/* Mission Layout */
+.about-mission {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.about-mission-card {
+  background-color: #111111;
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.mission-drop svg {
+  width: 100px;
+  height: 120px;
+  filter: drop-shadow(0 0 20px rgba(204,0,0,0.4));
+  animation: dropFloat 3s ease-in-out infinite;
+}
+
+.mission-card-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.mission-stat {
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  padding: 14px 18px;
+  text-align: center;
+}
+
+.mission-stat h4 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #cc0000;
+  margin: 0 0 4px 0;
+}
+
+.mission-stat p {
+  font-size: 0.82rem;
+  color: #888888;
+  margin: 0;
+}
+
+/* ─── VALUES ─────────────────────────────────────────────────── */
+.about-values-section {
+  background-color: #000000;
+  padding: 70px 20px;
+}
+
+.about-values-section .about-section-title {
+  color: #ffffff;
+}
+
+.about-values-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.about-value-card {
+  background-color: #111111;
+  border: 1px solid #1e1e1e;
+  border-radius: 14px;
+  padding: 28px 22px;
+  text-align: center;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.about-value-card:hover {
+  border-color: #cc0000;
+  transform: translateY(-4px);
+}
+
+.about-value-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 14px;
+}
+
+.about-value-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 10px 0;
+}
+
+.about-value-desc {
+  font-size: 0.85rem;
+  color: #777777;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ─── TEAM ───────────────────────────────────────────────────── */
+.about-team-grid {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.about-team-card {
+  background-color: #ffffff;
+  border: 1px solid #eeeeee;
+  border-radius: 16px;
+  padding: 32px 28px;
+  text-align: center;
+  max-width: 320px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.about-team-card:hover {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  transform: translateY(-4px);
+}
+
+.team-avatar {
+  width: 70px;
+  height: 70px;
+  background-color: #cc0000;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin: 0 auto 16px auto;
+}
+
+.team-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111111;
+  margin: 0 0 6px 0;
+}
+
+.team-role {
+  font-size: 0.85rem;
+  color: #cc0000;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+}
+
+.team-bio {
+  font-size: 0.85rem;
+  color: #666666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ─── ABOUT CTA ──────────────────────────────────────────────── */
+.about-cta {
+  background: linear-gradient(135deg, #cc0000 0%, #880000 100%);
+  padding: 70px 20px;
+  text-align: center;
+}
+
+.about-cta-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.about-cta-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 14px 0;
+}
+
+.about-cta-sub {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.8);
+  margin: 0 0 32px 0;
+}
+
+.about-cta-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.about-cta-buttons .btn-find {
+  text-decoration: none;
+  background-color: #ffffff;
+  color: #cc0000;
+  padding: 13px 28px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: transform 0.2s;
+}
+
+.about-cta-buttons .btn-find:hover {
+  transform: translateY(-2px);
+}
+
+.about-cta-buttons .btn-become {
+  text-decoration: none;
+  background: transparent;
+  color: #ffffff;
+  border: 2px solid rgba(255,255,255,0.5);
+  padding: 13px 28px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.about-cta-buttons .btn-become:hover {
+  border-color: #ffffff;
+  background: rgba(255,255,255,0.1);
+}
+
+/* ─── CONTACT PAGE ───────────────────────────────────────────── */
+.contact-page {
+  background-color: #0a0a0a;
+  padding: 60px 20px;
+  min-height: 60vh;
+}
+
+.contact-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 40px;
+  align-items: start;
+}
+
+/* Info Cards */
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contact-info-card {
+  background-color: #111111;
+  border: 1px solid #1e1e1e;
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  transition: border-color 0.2s;
+}
+
+.contact-info-card:hover {
+  border-color: #cc0000;
+}
+
+.contact-info-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.contact-info-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+}
+
+.contact-info-text {
+  font-size: 0.85rem;
+  color: #aaaaaa;
+  margin: 0 0 2px 0;
+}
+
+.contact-info-sub {
+  font-size: 0.78rem;
+  color: #555555;
+  margin: 0;
+}
+
+.contact-info-link {
+  font-size: 0.82rem;
+  color: #cc0000;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.contact-info-link:hover {
+  color: #ff4444;
+}
+
+/* Form Card */
+.contact-form-card {
+  background-color: #111111;
+  border: 1px solid #1e1e1e;
+  border-radius: 16px;
+  padding: 36px;
+}
+
+.contact-form-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+
+.contact-form-sub {
+  font-size: 0.88rem;
+  color: #666666;
+  margin: 0;
+}
+
+/* Success */
+.contact-success {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.contact-success-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.contact-success h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+
+.contact-success p {
+  font-size: 0.9rem;
+  color: #888888;
+  margin: 0;
+}
+
+/* ─── RESPONSIVE ABOUT & CONTACT ─────────────────────────────── */
+@media (max-width: 900px) {
+  .about-hero,
+  .contact-hero {
+    padding: 60px 30px;
+  }
+
+  .about-hero-title {
+    font-size: 2rem;
+  }
+
+  .about-stats {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 32px 30px;
+  }
+
+  .about-mission {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .about-values-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .contact-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-hero-title {
+    font-size: 1.6rem;
+  }
+
+  .about-stats {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 24px 16px;
+  }
+
+  .about-values-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-form-card {
+    padding: 24px 18px;
+  }
+}
