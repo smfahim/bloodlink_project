@@ -2240,7 +2240,7 @@ body {
   gap: 12px;
 }
 
-/* ─── DONOR MODAL RESPONSIVE ──────── */
+/* ─── DONOR MODAL RESPONSIVE ─────────────────────────────────── */
 @media (max-width: 480px) {
   .donor-modal-grid {
     grid-template-columns: 1fr;
@@ -2257,107 +2257,5 @@ body {
 
   .modal-actions {
     flex-direction: column;
-  }
-}
-
-/* ─── REQUEST FILTER TABS ────────────────────────────────────── */
-.request-filter-tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.filter-tab {
-  background: none;
-  border: 1.5px solid #e0e0e0;
-  color: #666666;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.filter-tab:hover {
-  border-color: #cc0000;
-  color: #cc0000;
-}
-
-.filter-tab-active {
-  background-color: #cc0000;
-  border-color: #cc0000;
-  color: #ffffff;
-}
-
-.filter-tab-count {
-  background-color: rgba(255,255,255,0.2);
-  padding: 1px 7px;
-  border-radius: 10px;
-  font-size: 0.75rem;
-}
-
-.filter-tab-active .filter-tab-count {
-  background-color: rgba(255,255,255,0.25);
-}
-
-/* ─── REQUEST CARD ACTIONS ───────────────────────────────────── */
-.request-card-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-/* ─── REQUEST DETAIL MODAL ───────────────────────────────────── */
-.request-detail-message {
-  background-color: #1a1a1a;
-  border-radius: 8px;
-  padding: 14px;
-  margin-bottom: 14px;
-}
-
-.request-detail-text {
-  font-size: 0.9rem;
-  color: #cccccc;
-  margin: 6px 0 0 0;
-  line-height: 1.6;
-}
-
-.request-detail-status {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 4px;
-}
-
-/* ─── RESPONSIVE ─────────────────────────────────────────────── */
-@media (max-width: 600px) {
-  .request-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-  }
-
-  .request-card-actions {
-    flex-direction: row;
-    width: 100%;
-  }
-
-  .request-card-actions button {
-    flex: 1;
-  }
-
-  .request-filter-tabs {
-    gap: 6px;
-  }
-
-  .filter-tab {
-    padding: 6px 12px;
-    font-size: 0.8rem;
   }
 }
