@@ -5,7 +5,8 @@ import Register  from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Admin     from "./pages/Admin";
 import Donors    from "./pages/Donors";
-import Requests  from "./pages/Requests";      // 
+import Requests  from "./pages/Requests"; 
+import LoadingScreen from "./components/LoadingScreen";    
 
 function App() {
   return (
