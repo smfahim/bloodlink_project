@@ -7,14 +7,16 @@ import { useAuth } from "../context/AuthContext";
 const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
 const Requests = () => {
-  const { user }                        = useAuth();
-  const [requests, setRequests]         = useState([]);
-  const [loading, setLoading]           = useState(false);
-  const [error, setError]               = useState("");
-  const [showModal, setShowModal]       = useState(false);
-  const [submitLoading, setSubmitLoading] = useState(false);
-  const [submitError, setSubmitError]   = useState("");
-  const [submitSuccess, setSubmitSuccess] = useState("");
+  const { user }                              = useAuth();
+  const [requests, setRequests]               = useState([]);
+  const [loading, setLoading]                 = useState(false);
+  const [error, setError]                     = useState("");
+  const [showModal, setShowModal]             = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [submitLoading, setSubmitLoading]     = useState(false);
+  const [submitError, setSubmitError]         = useState("");
+  const [submitSuccess, setSubmitSuccess]     = useState("");
+  const [filterUrgency, setFilterUrgency]     = useState("All");
 
   const [formData, setFormData] = useState({
     patientName: "",
@@ -25,7 +27,6 @@ const Requests = () => {
     message:     "",
   });
 
-  // Load requests on page load
   useEffect(() => {
     fetchRequests();
   }, []);
@@ -47,8 +48,7 @@ const Requests = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setSubmitError("");
     setSubmitSuccess("");
 
@@ -63,8 +63,8 @@ const Requests = () => {
       setSubmitSuccess("Blood request posted successfully!");
       setFormData({
         patientName: "", bloodGroup: "",
-        hospital: "",   city: "",
-        urgency: "Normal", message: "",
+        hospital:    "", city: "",
+        urgency:     "Normal", message: "",
       });
       fetchRequests();
       setTimeout(() => {
@@ -72,7 +72,9 @@ const Requests = () => {
         setSubmitSuccess("");
       }, 2000);
     } catch (err) {
-      setSubmitError(err.response?.data?.message || "Failed to post request");
+      setSubmitError(
+        err.response?.data?.message || "Failed to post request"
+      );
     } finally {
       setSubmitLoading(false);
     }
@@ -83,6 +85,18 @@ const Requests = () => {
     if (urgency === "Urgent")   return "badge-urgent";
     return "badge-normal-green";
   };
+
+  const timeAgo = (date) => {
+    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+    if (seconds < 60)    return "Just now";
+    if (seconds < 3600)  return `${Math.floor(seconds / 60)}m ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+    return `${Math.floor(seconds / 86400)}d ago`;
+  };
+
+  const filteredRequests = filterUrgency === "All"
+    ? requests
+    : requests.filter((r) => r.urgency === filterUrgency);
 
   return (
     <div>
@@ -95,22 +109,39 @@ const Requests = () => {
           <div>
             <h1 className="donors-title">Blood Requests</h1>
             <p className="donors-subtitle">
-              People in urgent need of blood right now
+              {requests.length} people in urgent need of blood
             </p>
           </div>
-          {user && (
+          {user ? (
             <button
               className="btn-auth btn-post-request"
               onClick={() => setShowModal(true)}
             >
               🩸 Post Request
             </button>
-          )}
-          {!user && (
+          ) : (
             <a href="/login" className="btn-auth btn-post-request">
               Login to Post Request
             </a>
           )}
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="request-filter-tabs">
+          {["All", "Critical", "Urgent", "Normal"].map((tab) => (
+            <button
+              key={tab}
+              className={`filter-tab ${filterUrgency === tab ? "filter-tab-active" : ""}`}
+              onClick={() => setFilterUrgency(tab)}
+            >
+              {tab}
+              <span className="filter-tab-count">
+                {tab === "All"
+                  ? requests.length
+                  : requests.filter((r) => r.urgency === tab).length}
+              </span>
+            </button>
+          ))}
         </div>
 
         {/* Loading */}
@@ -125,18 +156,18 @@ const Requests = () => {
         {error && <div className="donors-error">{error}</div>}
 
         {/* Empty */}
-        {!loading && requests.length === 0 && (
+        {!loading && filteredRequests.length === 0 && (
           <div className="donors-empty">
             <p className="empty-icon">🩸</p>
-            <h3>No active requests</h3>
+            <h3>No requests found</h3>
             <p>No blood requests at the moment</p>
           </div>
         )}
 
         {/* Request Cards */}
-        {!loading && requests.length > 0 && (
+        {!loading && filteredRequests.length > 0 && (
           <div className="request-cards">
-            {requests.map((req) => (
+            {filteredRequests.map((req) => (
               <div className="request-card" key={req._id}>
                 <div className="request-card-left">
                   <div className="blood-badge">{req.bloodGroup}</div>
@@ -157,22 +188,31 @@ const Requests = () => {
                       <p className="donor-phone">📞 {req.user.phone}</p>
                     )}
                     <p className="request-date">
-                      🕐 {new Date(req.createdAt).toLocaleDateString("en-BD", {
-                        year: "numeric", month: "short", day: "numeric",
-                      })}
+                      🕐 {timeAgo(req.createdAt)}
                     </p>
                   </div>
                 </div>
-                <button
-                  className="btn-respond"
-                  onClick={() =>
-                    req.user?.phone
-                      ? window.open(`tel:${req.user.phone}`)
-                      : alert("Contact info not available")
-                  }
-                >
-                  Respond
-                </button>
+
+                {/* Action Buttons */}
+                <div className="request-card-actions">
+                  <button
+                    className="btn-view-details"
+                    onClick={() => setSelectedRequest(req)}
+                  >
+                    Details
+                  </button>
+                  <button
+                    className="btn-respond"
+                    onClick={() =>
+                      req.user?.phone
+                        ? window.open(`tel:${req.user.phone}`)
+                        : alert("Contact info not available")
+                    }
+                  >
+                    Respond
+                  </button>
+                </div>
+
               </div>
             ))}
           </div>
@@ -190,16 +230,13 @@ const Requests = () => {
               <button
                 className="modal-close"
                 onClick={() => setShowModal(false)}
-              >
-                ✕
-              </button>
+              >✕</button>
             </div>
 
             {submitError   && <div className="auth-error">{submitError}</div>}
             {submitSuccess && <div className="auth-success">{submitSuccess}</div>}
 
             <div className="auth-form">
-
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">Patient Name *</label>
@@ -282,8 +319,118 @@ const Requests = () => {
               >
                 {submitLoading ? "Posting..." : "🩸 Post Request"}
               </button>
-
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Request Details Modal ── */}
+      {selectedRequest && (
+        <div
+          className="modal-overlay"
+          onClick={() => setSelectedRequest(null)}
+        >
+          <div
+            className="modal-card donor-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h2 className="modal-title">Request Details</h2>
+              <button
+                className="modal-close"
+                onClick={() => setSelectedRequest(null)}
+              >✕</button>
+            </div>
+
+            <div className="donor-modal-top">
+              <div
+                className="blood-badge"
+                style={{ width: "64px", height: "64px", fontSize: "1.3rem" }}
+              >
+                {selectedRequest.bloodGroup}
+              </div>
+              <div>
+                <h3 className="donor-modal-name">
+                  {selectedRequest.patientName}
+                </h3>
+                <span className={`urgency-badge ${urgencyClass(selectedRequest.urgency)}`}>
+                  {selectedRequest.urgency}
+                </span>
+              </div>
+            </div>
+
+            <div className="donor-modal-grid">
+              <div className="modal-info-item">
+                <p className="modal-info-label">🏥 Hospital</p>
+                <p className="modal-info-value">{selectedRequest.hospital}</p>
+              </div>
+              <div className="modal-info-item">
+                <p className="modal-info-label">📍 City</p>
+                <p className="modal-info-value">{selectedRequest.city}</p>
+              </div>
+              <div className="modal-info-item">
+                <p className="modal-info-label">🩸 Blood Group</p>
+                <p className="modal-info-value">{selectedRequest.bloodGroup}</p>
+              </div>
+              <div className="modal-info-item">
+                <p className="modal-info-label">⚡ Urgency</p>
+                <p className="modal-info-value">{selectedRequest.urgency}</p>
+              </div>
+              <div className="modal-info-item">
+                <p className="modal-info-label">📞 Contact</p>
+                <p className="modal-info-value">
+                  {selectedRequest.user?.phone || "Not provided"}
+                </p>
+              </div>
+              <div className="modal-info-item">
+                <p className="modal-info-label">🕐 Posted</p>
+                <p className="modal-info-value">
+                  {timeAgo(selectedRequest.createdAt)}
+                </p>
+              </div>
+            </div>
+
+            {selectedRequest.message && (
+              <div className="request-detail-message">
+                <p className="modal-info-label">💬 Additional Message</p>
+                <p className="request-detail-text">
+                  {selectedRequest.message}
+                </p>
+              </div>
+            )}
+
+            <div className="request-detail-status">
+              <p className="modal-info-label">📋 Status</p>
+              <span className={`table-status ${
+                selectedRequest.status === "Open"
+                  ? "status-active"
+                  : "status-closed"
+              }`}>
+                {selectedRequest.status}
+              </span>
+            </div>
+
+            <div className="modal-actions" style={{ marginTop: "20px" }}>
+              <button
+                className="btn-auth"
+                style={{ flex: 1 }}
+                onClick={() =>
+                  selectedRequest.user?.phone
+                    ? window.open(`tel:${selectedRequest.user.phone}`)
+                    : alert("Contact info not available")
+                }
+              >
+                📞 Respond Now
+              </button>
+              <button
+                className="btn-become"
+                style={{ flex: 1, padding: "13px" }}
+                onClick={() => setSelectedRequest(null)}
+              >
+                Close
+              </button>
+            </div>
+
           </div>
         </div>
       )}

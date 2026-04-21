@@ -2125,7 +2125,7 @@ body {
   color: #cc0000;
 }
 
-/* ─── DONOR MODAL ────────────────────────────────────────────── */
+/* ─── DONOR MODAL ─────────────── */
 .donor-modal {
   max-width: 540px;
 }
@@ -2257,5 +2257,116 @@ body {
 
   .modal-actions {
     flex-direction: column;
+  }
+}
+
+/* ─── REQUEST CARD ACTIONS FIX ───────────────────────────────── */
+.request-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.request-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+  min-width: 100px;
+}
+
+.request-card-actions .btn-view-details {
+  background: none;
+  border: 1.5px solid #dddddd;
+  color: #555555;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  width: 100%;
+  text-align: center;
+}
+
+.request-card-actions .btn-view-details:hover {
+  border-color: #cc0000;
+  color: #cc0000;
+}
+
+.request-card-actions .btn-respond {
+  width: 100%;
+  text-align: center;
+  padding: 9px 16px;
+}
+
+/* ─── FILTER TABS FIX ────────────────────────────────────────── */
+.request-filter-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.filter-tab {
+  background: #ffffff;
+  border: 1.5px solid #e0e0e0;
+  color: #555555;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.filter-tab:hover {
+  border-color: #cc0000;
+  color: #cc0000;
+}
+
+.filter-tab-active {
+  background-color: #cc0000;
+  border-color: #cc0000;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(204, 0, 0, 0.25);
+}
+
+.filter-tab-count {
+  background-color: rgba(0, 0, 0, 0.08);
+  color: inherit;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.filter-tab-active .filter-tab-count {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+/* ─── RESPONSIVE REQUEST CARD ────────────────────────────────── */
+@media (max-width: 600px) {
+  .request-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .request-card-actions {
+    flex-direction: row;
+    width: 100%;
+    min-width: unset;
+  }
+
+  .request-card-actions .btn-view-details,
+  .request-card-actions .btn-respond {
+    flex: 1;
   }
 }
