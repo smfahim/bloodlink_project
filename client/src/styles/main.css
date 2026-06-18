@@ -1808,7 +1808,7 @@ body {
   }
 }
 
-/* ─── REQUESTS PAGE ──────────────────────────────────────────── */
+/* ─── REQUESTS PAGE ─────── */
 .requests-page {
   min-height: 80vh;
   background-color: #f9f9f9;
@@ -1848,7 +1848,7 @@ body {
   margin: 4px 0 0 0;
 }
 
-/* ─── MODAL ──────────────────────────────────────────────────── */
+/* ─── MODAL ──────────── */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -1947,7 +1947,7 @@ body {
   }
 }
 
-/* ─── DASHBOARD LOADER ───────────────────────────────────────── */
+/* ─── DASHBOARD LOADER ────── */
 .dash-loader {
   min-height: 100vh;
   background-color: #0a0a0a;
@@ -1960,7 +1960,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* ─── ADMIN ROLE BADGE ───────────────────────────────────────── */
+/* ─── ADMIN ROLE BADGE ──────── */
 .role-admin {
   background-color: rgba(124, 58, 237, 0.15);
   color: #a78bfa;
@@ -2099,7 +2099,7 @@ body {
   to   { width: 100%; }
 }
 
-/* ─── DONOR CARD ACTIONS ─────────────────────────────────────── */
+/* ─── DONOR CARD ACTIONS ──────────── */
 .donor-card-actions {
   display: flex;
   gap: 10px;
@@ -2240,7 +2240,7 @@ body {
   gap: 12px;
 }
 
-/* ─── DONOR MODAL RESPONSIVE ─────────────────────────────────── */
+/* ─── DONOR MODAL RESPONSIVE ──────── */
 @media (max-width: 480px) {
   .donor-modal-grid {
     grid-template-columns: 1fr;
@@ -2352,7 +2352,7 @@ body {
   color: #ffffff;
 }
 
-/* ─── RESPONSIVE REQUEST CARD ────────────────────────────────── */
+/* ─── RESPONSIVE REQUEST CARD ───────── */
 @media (max-width: 600px) {
   .request-card {
     flex-direction: column;
@@ -2371,7 +2371,7 @@ body {
   }
 }
 
-/* ─── ABOUT HERO ─────────────────────────────────────────────── */
+/* ─── ABOUT HERO ─────── */
 .about-hero {
   background-color: #000000;
   padding: 80px 80px 60px;
@@ -2559,7 +2559,7 @@ body {
   margin: 0;
 }
 
-/* ─── VALUES ─────────────────────────────────────────────────── */
+/* ─── VALUES ───────── */
 .about-values-section {
   background-color: #000000;
   padding: 70px 20px;
@@ -2609,7 +2609,7 @@ body {
   margin: 0;
 }
 
-/* ─── TEAM ───────────────────────────────────────────────────── */
+/* ─── TEAM ─────── */
 .about-team-grid {
   display: flex;
   justify-content: center;
@@ -2668,7 +2668,7 @@ body {
   margin: 0;
 }
 
-/* ─── ABOUT CTA ──────────────────────────────────────────────── */
+/* ─── ABOUT CTA ────── */
 .about-cta {
   background: linear-gradient(135deg, #cc0000 0%, #880000 100%);
   padding: 70px 20px;
@@ -2732,7 +2732,7 @@ body {
   background: rgba(255,255,255,0.1);
 }
 
-/* ─── CONTACT PAGE ───────────────────────────────────────────── */
+/* ─── CONTACT PAGE ──── */
 .contact-page {
   background-color: #0a0a0a;
   padding: 60px 20px;
@@ -2851,7 +2851,7 @@ body {
   margin: 0;
 }
 
-/* ─── RESPONSIVE ABOUT & CONTACT ─────────────────────────────── */
+/* ─── RESPONSIVE ABOUT & CONTACT ──── */
 @media (max-width: 900px) {
   .about-hero,
   .contact-hero {
@@ -2898,4 +2898,130 @@ body {
   .contact-form-card {
     padding: 24px 18px;
   }
+}
+
+/* ─── LOGIN METHOD TOGGLE ───── */
+.login-method-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.method-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #666666;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.method-btn:hover {
+  color: #ffffff;
+}
+
+.method-active {
+  background-color: #cc0000;
+  color: #ffffff !important;
+}
+
+/* ─── OTP INPUT ────── */
+.otp-input {
+  font-size: 1.6rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 12px !important;
+  text-align: center !important;
+  color: #cc0000 !important;
+  padding: 16px !important;
+}
+
+.otp-hint {
+  font-size: 0.78rem;
+  color: #555555;
+  margin: 6px 0 0 0;
+  text-align: center;
+}
+
+/* ─── OTP EMAIL DISPLAY ──────────────────────────────────────── */
+.otp-email-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.otp-email-display span {
+  font-size: 0.82rem;
+  color: #666666;
+}
+
+.otp-email-display strong {
+  font-size: 0.88rem;
+  color: #cccccc;
+  flex: 1;
+}
+
+.otp-change-email {
+  background: none;
+  border: none;
+  color: #cc0000;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.otp-change-email:hover {
+  color: #ff4444;
+}
+
+/* ─── OTP RESEND ────── */
+.otp-resend {
+  text-align: center;
+  margin-top: 4px;
+}
+
+.otp-timer {
+  font-size: 0.82rem;
+  color: #555555;
+  margin: 0;
+}
+
+.otp-timer strong {
+  color: #cc0000;
+}
+
+.otp-resend-btn {
+  background: none;
+  border: none;
+  color: #cc0000;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.otp-resend-btn:hover {
+  background-color: rgba(204, 0, 0, 0.1);
+}
+
+/* ─── BTN DISABLED ───── */
+.btn-auth:disabled {
+  background-color: #333333;
+  cursor: not-allowed;
+  transform: none;
 }

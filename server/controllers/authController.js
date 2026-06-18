@@ -1,10 +1,18 @@
-const jwt  = require("jsonwebtoken");
-const User = require("../models/User");
+const jwt          = require("jsonwebtoken");
+const User         = require("../models/User");
+const OTP          = require("../models/OTP");
+const { sendOTPEmail } = require("../config/email");
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
+// Generate 6 digit OTP
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+// @route  POST /api/auth/register
 const registerUser = async (req, res) => {
   try {
     const {
@@ -12,7 +20,6 @@ const registerUser = async (req, res) => {
       bloodGroup, city, phone, isDonor,
     } = req.body;
 
-    // Validate
     if (!name || !email || !password || !bloodGroup || !city) {
       return res.status(400).json({ message: "Please fill all fields" });
     }
@@ -23,11 +30,8 @@ const registerUser = async (req, res) => {
     }
 
     const user = new User({
-      name,
-      email,
-      password,
-      bloodGroup,
-      city,
+      name, email, password,
+      bloodGroup, city,
       phone:   phone   || "",
       isDonor: isDonor || false,
     });
@@ -51,6 +55,84 @@ const registerUser = async (req, res) => {
   }
 };
 
+// @route  POST /api/auth/send-otp
+const sendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    // Check user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "No account found with this email" });
+    }
+
+    // Delete old OTPs for this email
+    await OTP.deleteMany({ email });
+
+    // Generate new OTP
+    const otp = generateOTP();
+
+    // Save OTP to DB
+    await OTP.create({ email, otp });
+
+    // Send email
+    await sendOTPEmail(email, otp, user.name);
+
+    return res.json({
+      message: "OTP sent successfully",
+      email:   email,
+    });
+
+  } catch (error) {
+    console.error("SEND OTP ERROR:", error);
+    return res.status(500).json({ message: "Failed to send OTP. Try again." });
+  }
+};
+
+// @route  POST /api/auth/verify-otp
+const verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ message: "Email and OTP are required" });
+    }
+
+    // Find OTP in DB
+    const otpRecord = await OTP.findOne({ email, otp });
+
+    if (!otpRecord) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    // Delete used OTP
+    await OTP.deleteMany({ email });
+
+    // Find user and login
+    const user = await User.findOne({ email });
+
+    return res.json({
+      _id:        user._id,
+      name:       user.name,
+      email:      user.email,
+      bloodGroup: user.bloodGroup,
+      city:       user.city,
+      isDonor:    user.isDonor,
+      isAdmin:    user.isAdmin,
+      token:      generateToken(user._id),
+    });
+
+  } catch (error) {
+    console.error("VERIFY OTP ERROR:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// @route  POST /api/auth/login (password login — still works)
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -60,13 +142,11 @@ const loginUser = async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const isMatch = user.matchPassword(password);
-
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -88,22 +168,21 @@ const loginUser = async (req, res) => {
   }
 };
 
+// @route  GET /api/auth/me
 const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
     return res.json(user);
   } catch (error) {
-    console.error("GETME ERROR:", error);
     return res.status(500).json({ message: error.message });
   }
 };
 
+// @route  PUT /api/auth/update
 const updateProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     user.name  = req.body.name  || user.name;
     user.phone = req.body.phone || user.phone;
@@ -122,11 +201,16 @@ const updateProfile = async (req, res) => {
       isDonor:    user.isDonor,
       isAdmin:    user.isAdmin,
     });
-
   } catch (error) {
-    console.error("UPDATE ERROR:", error);
     return res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = { registerUser, loginUser, getMe, updateProfile };
+module.exports = {
+  registerUser,
+  loginUser,
+  sendOTP,
+  verifyOTP,
+  getMe,
+  updateProfile,
+};
