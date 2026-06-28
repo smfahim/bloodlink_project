@@ -11,36 +11,77 @@ const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-// @route  POST /api/auth/register — Send OTP
+// @route POST /api/auth/register — Send OTP
 const registerUser = async (req, res) => {
   try {
     const {
-      name, email, password,
-      bloodGroup, city, phone, isDonor,
+      name,
+      email,
+      password,
+      bloodGroup,
+      city,
+      phone,
+      isDonor,
     } = req.body;
 
+    console.log("\n========== REGISTER REQUEST ==========");
+    console.log(req.body);
+
+    // Required fields check
     if (!name || !email || !password || !bloodGroup || !city) {
-      return res.status(400).json({ message: "Please fill all fields" });
+      return res.status(400).json({
+        message: "Please fill all required fields",
+      });
     }
 
+    // Existing user check
     const userExists = await User.findOne({ email });
+
     if (userExists) {
-      return res.status(400).json({ message: "Email already registered" });
+      return res.status(400).json({
+        message: "Email already registered",
+      });
     }
 
+    // Remove old OTP
     await OTP.deleteMany({ email });
+
+    // Generate OTP
     const otp = generateOTP();
-    await OTP.create({ email, otp });
+
+    console.log("Generated OTP:", otp);
+
+    // Save OTP
+    await OTP.create({
+      email,
+      otp,
+    });
+
+    console.log("OTP saved successfully.");
+
+    // Send Email
+    console.log("Sending OTP email...");
+
     await sendOTPEmail(email, otp, name);
 
+    console.log("✅ Email sent successfully!");
+
     return res.status(200).json({
-      message: "OTP sent to your email",
+      success: true,
+      message: "OTP sent successfully",
       email,
     });
 
   } catch (error) {
-    console.error("REGISTER ERROR:", error);
-    return res.status(500).json({ message: error.message });
+
+    console.log("\n========== REGISTER ERROR ==========");
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
   }
 };
 
