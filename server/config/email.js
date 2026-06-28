@@ -1,10 +1,15 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host:   "smtp.gmail.com",
+  port:   587,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false,
   },
 });
 
@@ -38,13 +43,17 @@ const sendOTPEmail = async (email, otp, name) => {
             <p>Connecting donors. Saving lives.</p>
           </div>
           <div class="body">
-            <p style="color:#333; font-size:16px;">Hello <strong>${name}</strong>,</p>
+            <p style="color:#333; font-size:16px;">
+              Hello <strong>${name}</strong>,
+            </p>
             <p style="color:#555; font-size:15px;">
               Use the OTP below to complete your BloodLink registration.
             </p>
             <div class="otp-box">
               <div class="otp-code">${otp}</div>
-              <div class="otp-label">Expires in <strong>5 minutes</strong></div>
+              <div class="otp-label">
+                Expires in <strong>5 minutes</strong>
+              </div>
             </div>
             <div class="warning">
               ⚠️ Never share this code with anyone.
