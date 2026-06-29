@@ -1,31 +1,10 @@
-const nodemailer = require("nodemailer");
-const dns        = require("dns");
+const { Resend } = require("resend");
 
-// ← Force IPv4 DNS lookup
-dns.setDefaultResultOrder("ipv4first");
-
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    host:   "smtp.gmail.com",
-    port:   465,
-    secure: true,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    tls: {
-      rejectUnauthorized: false,
-    },
-    socketTimeout:    10000,
-    connectionTimeout: 10000,
-  });
-};
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendOTPEmail = async (email, otp, name) => {
-  const transporter = createTransporter();
-
-  const mailOptions = {
-    from:    `"BloodLink" <${process.env.EMAIL_USER}>`,
+  await resend.emails.send({
+    from:    "BloodLink <onboarding@resend.dev>",
     to:      email,
     subject: "BloodLink — Your Registration OTP Code",
     html: `
@@ -79,9 +58,7 @@ const sendOTPEmail = async (email, otp, name) => {
       </body>
       </html>
     `,
-  };
-
-  await transporter.sendMail(mailOptions);
+  });
 };
 
 module.exports = { sendOTPEmail };
