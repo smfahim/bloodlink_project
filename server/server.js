@@ -1,11 +1,7 @@
 const dns = require("dns");
-dns.setDefaultResultOrder("ipv4first");  // 
+dns.setDefaultResultOrder("ipv4first");
 
-const dotenv    = require("dotenv");
-dotenv.config();
-
-const dotenv    = require("dotenv");
-dotenv.config();
+require("dotenv").config();
 
 const express   = require("express");
 const cors      = require("cors");
@@ -15,7 +11,6 @@ connectDB();
 
 const app = express();
 
-// CORS
 app.use(cors({
   origin: [
     "http://localhost:5173",
@@ -27,24 +22,16 @@ app.use(cors({
 
 app.use(express.json());
 
-// Test route
-app.post("/api/test", (req, res) => {
-  res.json({ message: "Test works!", body: req.body });
-});
-
-// Routes
 app.use("/api/auth",     require("./routes/authRoutes"));
 app.use("/api/donors",   require("./routes/donorRoutes"));
 app.use("/api/requests", require("./routes/requestRoutes"));
 app.use("/api/admin",    require("./routes/adminRoutes"));
 
-// Global error handler
 app.use((err, req, res, next) => {
   console.error("GLOBAL ERROR:", err.stack);
   res.status(500).json({ message: err.message });
 });
 
-// Health check
 app.get("/", (req, res) => {
   res.json({ message: "BloodLink API is running ✅" });
 });
