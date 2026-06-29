@@ -1,10 +1,21 @@
-const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  host:   "smtp.gmail.com",
+  port:   465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
 
 const sendOTPEmail = async (email, otp, name) => {
-  await resend.emails.send({
-    from:    "BloodLink <onboarding@resend.dev>",
+  const mailOptions = {
+    from:    `"BloodLink" <${process.env.EMAIL_USER}>`,
     to:      email,
     subject: "BloodLink — Your Registration OTP Code",
     html: `
@@ -58,7 +69,9 @@ const sendOTPEmail = async (email, otp, name) => {
       </body>
       </html>
     `,
-  });
+  };
+
+  await transporter.sendMail(mailOptions);
 };
 
 module.exports = { sendOTPEmail };
