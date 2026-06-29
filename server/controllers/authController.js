@@ -15,73 +15,76 @@ const generateOTP = () => {
 const registerUser = async (req, res) => {
   try {
     const {
-      name,
-      email,
-      password,
-      bloodGroup,
-      city,
-      phone,
-      isDonor,
+      name, email, password,
+      bloodGroup, city, phone, isDonor,
     } = req.body;
 
-    console.log("\n========== REGISTER REQUEST ==========");
-    console.log(req.body);
+    console.log("=== REGISTER CALLED ===", email);
 
-    // Required fields check
     if (!name || !email || !password || !bloodGroup || !city) {
-      return res.status(400).json({
-        message: "Please fill all required fields",
-      });
+      return res.status(400).json({ message: "Please fill all fields" });
     }
 
-    // Existing user check
     const userExists = await User.findOne({ email });
-
     if (userExists) {
-      return res.status(400).json({
-        message: "Email already registered",
-      });
+      return res.status(400).json({ message: "Email already registered" });
     }
 
-    // Remove old OTP
     await OTP.deleteMany({ email });
-
-    // Generate OTP
     const otp = generateOTP();
+    console.log("=== OTP GENERATED ===", otp);
 
-    console.log("Generated OTP:", otp);
-
-    // Save OTP
-    await OTP.create({
-      email,
-      otp,
-    });
-
-    console.log("OTP saved successfully.");
-
-    // Send Email
-    console.log("Sending OTP email...");
+    await OTP.create({ email, otp });
+    console.log("=== OTP SAVED TO DB ===");
 
     await sendOTPEmail(email, otp, name);
-
-    console.log("✅ Email sent successfully!");
+    console.log("=== EMAIL SENT ===");
 
     return res.status(200).json({
-      success: true,
-      message: "OTP sent successfully",
+      message: "OTP sent to your email",
       email,
     });
 
   } catch (error) {
+    console.error("=== REGISTER ERROR ===", error);
+    return res.status(500).json({ message: error.message });
+  }
+};const registerUser = async (req, res) => {
+  try {
+    const {
+      name, email, password,
+      bloodGroup, city, phone, isDonor,
+    } = req.body;
 
-    console.log("\n========== REGISTER ERROR ==========");
-    console.error(error);
+    console.log("=== REGISTER CALLED ===", email);
 
-    return res.status(500).json({
-      success: false,
-      message: error.message,
+    if (!name || !email || !password || !bloodGroup || !city) {
+      return res.status(400).json({ message: "Please fill all fields" });
+    }
+
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: "Email already registered" });
+    }
+
+    await OTP.deleteMany({ email });
+    const otp = generateOTP();
+    console.log("=== OTP GENERATED ===", otp);
+
+    await OTP.create({ email, otp });
+    console.log("=== OTP SAVED TO DB ===");
+
+    await sendOTPEmail(email, otp, name);
+    console.log("=== EMAIL SENT ===");
+
+    return res.status(200).json({
+      message: "OTP sent to your email",
+      email,
     });
 
+  } catch (error) {
+    console.error("=== REGISTER ERROR ===", error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
