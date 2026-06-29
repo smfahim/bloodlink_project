@@ -1,131 +1,87 @@
 const nodemailer = require("nodemailer");
+const dns        = require("dns");
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  family: 4, // Force IPv4
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-});
+// ← Force IPv4 DNS lookup
+dns.setDefaultResultOrder("ipv4first");
 
-// ✅ SMTP Connection Test
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("❌ SMTP Connection Error:");
-    console.error(error);
-  } else {
-    console.log("✅ SMTP Server is ready to send emails");
-  }
-});
+const createTransporter = () => {
+  return nodemailer.createTransport({
+    host:   "smtp.gmail.com",
+    port:   465,
+    secure: true,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+    socketTimeout:    10000,
+    connectionTimeout: 10000,
+  });
+};
 
 const sendOTPEmail = async (email, otp, name) => {
-  try {
-    const mailOptions = {
-      from: `"BloodLink" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: "BloodLink - Your Registration OTP Code",
-      html: `
+  const transporter = createTransporter();
+
+  const mailOptions = {
+    from:    `"BloodLink" <${process.env.EMAIL_USER}>`,
+    to:      email,
+    subject: "BloodLink — Your Registration OTP Code",
+    html: `
       <!DOCTYPE html>
       <html>
       <head>
         <style>
-          body{
-            font-family:Arial,sans-serif;
-            background:#f4f4f4;
-            margin:0;
-            padding:0;
-          }
-          .container{
-            max-width:500px;
-            margin:40px auto;
-            background:#fff;
-            border-radius:12px;
-            overflow:hidden;
-            box-shadow:0 4px 15px rgba(0,0,0,.15);
-          }
-          .header{
-            background:#c40000;
-            color:#fff;
-            text-align:center;
-            padding:30px;
-          }
-          .body{
-            padding:30px;
-          }
-          .otp{
-            text-align:center;
-            font-size:38px;
-            font-weight:bold;
-            color:#c40000;
-            letter-spacing:8px;
-            margin:25px 0;
-          }
-          .footer{
-            background:#fafafa;
-            padding:15px;
-            text-align:center;
-            color:#888;
-            font-size:12px;
-          }
+          body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+          .container { max-width: 480px; margin: 40px auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+          .header { background: #cc0000; padding: 32px; text-align: center; }
+          .header h1 { color: #ffffff; margin: 0; font-size: 24px; }
+          .header p { color: rgba(255,255,255,0.8); margin: 8px 0 0; font-size: 14px; }
+          .body { padding: 36px; }
+          .otp-box { background: #f9f9f9; border: 2px dashed #cc0000; border-radius: 10px; padding: 24px; text-align: center; margin: 24px 0; }
+          .otp-code { font-size: 42px; font-weight: bold; color: #cc0000; letter-spacing: 10px; }
+          .otp-label { font-size: 13px; color: #888; margin-top: 8px; }
+          .warning { background: #fff5f5; border-left: 4px solid #cc0000; padding: 12px 16px; border-radius: 4px; margin: 20px 0; font-size: 13px; color: #666; }
+          .footer { background: #f9f9f9; padding: 20px; text-align: center; font-size: 12px; color: #aaa; }
         </style>
       </head>
       <body>
         <div class="container">
-
           <div class="header">
-            <h2>BloodLink</h2>
-            <p>Connecting Donors. Saving Lives.</p>
+            <h1>BloodLink</h1>
+            <p>Connecting donors. Saving lives.</p>
           </div>
-
           <div class="body">
-
-            <h3>Hello ${name},</h3>
-
-            <p>
-              Thank you for registering with <b>BloodLink</b>.
+            <p style="color:#333; font-size:16px;">
+              Hello <strong>${name}</strong>,
             </p>
-
-            <p>Your verification OTP is:</p>
-
-            <div class="otp">${otp}</div>
-
-            <p>
-              This OTP will expire in <b>5 minutes</b>.
+            <p style="color:#555; font-size:15px;">
+              Use the OTP below to complete your BloodLink registration.
             </p>
-
-            <p style="color:red;">
-              Never share this OTP with anyone.
+            <div class="otp-box">
+              <div class="otp-code">${otp}</div>
+              <div class="otp-label">
+                Expires in <strong>5 minutes</strong>
+              </div>
+            </div>
+            <div class="warning">
+              ⚠️ Never share this code with anyone.
+            </div>
+            <p style="color:#888; font-size:13px;">
+              If you didn't request this, ignore this email.
             </p>
-
           </div>
-
           <div class="footer">
-            © 2026 BloodLink. All Rights Reserved.
+            &copy; 2026 BloodLink. All rights reserved.
           </div>
-
         </div>
       </body>
       </html>
-      `,
-    };
+    `,
+  };
 
-    const info = await transporter.sendMail(mailOptions);
-
-    console.log("✅ Email Sent Successfully");
-    console.log("Message ID:", info.messageId);
-
-    return true;
-  } catch (error) {
-    console.error("❌ Email Send Error:");
-    console.error(error);
-    throw error;
-  }
+  await transporter.sendMail(mailOptions);
 };
 
 module.exports = { sendOTPEmail };
