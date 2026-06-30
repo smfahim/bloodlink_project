@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import API from "../api/axios";
-import { useAuth } from "../context/AuthContext";
+import { Link, useNavigate }          from "react-router-dom";
+import API                            from "../api/axios";
+import { useAuth }                    from "../context/AuthContext";
 
 const Admin = () => {
-  const { user, logout }              = useAuth();
-  const navigate                      = useNavigate();
-  const [activeTab, setActiveTab]     = useState("overview");
-  const [stats, setStats]             = useState({});
-  const [users, setUsers]             = useState([]);
-  const [requests, setRequests]       = useState([]);
-  const [loading, setLoading]         = useState(true);
+  const { user, logout }          = useAuth();
+  const navigate                  = useNavigate();
+  const [activeTab, setActiveTab] = useState("overview");
+  const [stats, setStats]         = useState({});
+  const [users, setUsers]         = useState([]);
+  const [requests, setRequests]   = useState([]);
+  const [loading, setLoading]     = useState(true);
+  const [searchUser, setSearchUser] = useState("");
+  const [filterRole, setFilterRole] = useState("All");
 
   useEffect(() => {
-    if (!user || !user.isAdmin) {
-      navigate("/");
-      return;
-    }
     fetchAll();
-  }, [user]);
+  }, []);
 
   const fetchAll = async () => {
     setLoading(true);
@@ -39,7 +37,7 @@ const Admin = () => {
   };
 
   const handleDeleteUser = async (id) => {
-    if (!window.confirm("Delete this user?")) return;
+    if (!window.confirm("Delete this user permanently?")) return;
     try {
       await API.delete(`/admin/users/${id}`);
       setUsers(users.filter((u) => u._id !== id));
@@ -63,6 +61,25 @@ const Admin = () => {
     navigate("/");
   };
 
+  const timeAgo = (date) => {
+    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+    if (seconds < 60)    return "Just now";
+    if (seconds < 3600)  return `${Math.floor(seconds / 60)}m ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+    return `${Math.floor(seconds / 86400)}d ago`;
+  };
+
+  // Filter users
+  const filteredUsers = users.filter((u) => {
+    const matchSearch = u.name.toLowerCase().includes(searchUser.toLowerCase()) ||
+                        u.email.toLowerCase().includes(searchUser.toLowerCase());
+    const matchRole   = filterRole === "All"   ? true :
+                        filterRole === "Admin"  ? u.isAdmin :
+                        filterRole === "Donor"  ? u.isDonor && !u.isAdmin :
+                        !u.isDonor && !u.isAdmin;
+    return matchSearch && matchRole;
+  });
+
   if (loading) {
     return (
       <div className="dash-loader">
@@ -75,7 +92,7 @@ const Admin = () => {
   return (
     <div className="dashboard-page">
 
-      {/* Sidebar */}
+      {/* ── Sidebar ── */}
       <aside className="dashboard-sidebar">
         <Link to="/" className="sidebar-logo">
           Blood<span className="logo-accent">Link</span>
@@ -92,94 +109,110 @@ const Admin = () => {
         </div>
 
         <nav className="sidebar-nav">
-          <button
-            className={`sidebar-nav-item ${activeTab === "overview"  ? "active" : ""}`}
-            onClick={() => setActiveTab("overview")}
-          >
-            📊 Overview
-          </button>
-          <button
-            className={`sidebar-nav-item ${activeTab === "users"     ? "active" : ""}`}
-            onClick={() => setActiveTab("users")}
-          >
-            👥 Manage Users
-          </button>
-          <button
-            className={`sidebar-nav-item ${activeTab === "requests"  ? "active" : ""}`}
-            onClick={() => setActiveTab("requests")}
-          >
-            🩸 Blood Requests
-          </button>
-          <button
-            className={`sidebar-nav-item ${activeTab === "donors"    ? "active" : ""}`}
-            onClick={() => setActiveTab("donors")}
-          >
-            ❤️ Donors List
-          </button>
+          {[
+            { tab: "overview",  icon: "📊", label: "Overview"       },
+            { tab: "users",     icon: "👥", label: "Manage Users"   },
+            { tab: "requests",  icon: "🩸", label: "Blood Requests" },
+            { tab: "donors",    icon: "❤️", label: "Donors List"    },
+          ].map(({ tab, icon, label }) => (
+            <button
+              key={tab}
+              className={`sidebar-nav-item ${activeTab === tab ? "active" : ""}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {icon} {label}
+            </button>
+          ))}
         </nav>
 
-        <button className="sidebar-logout" onClick={handleLogout}>
-          🚪 Logout
-        </button>
+        <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: "8px" }}>
+          <Link to="/" className="sidebar-nav-item" style={{ textDecoration: "none", color: "#888" }}>
+            🏠 Back to Home
+          </Link>
+          <button className="sidebar-logout" onClick={handleLogout}>
+            🚪 Logout
+          </button>
+        </div>
       </aside>
 
-      {/* Main */}
+      {/* ── Main ── */}
       <main className="dashboard-main">
 
-        {/* ── Overview ── */}
+        {/* ════ Overview ════ */}
         {activeTab === "overview" && (
           <div className="dash-section">
             <h2 className="dash-heading">Admin Dashboard</h2>
-            <p className="dash-subheading">
-              BloodLink platform overview
-            </p>
+            <p className="dash-subheading">BloodLink platform overview</p>
 
+            {/* Stat Cards */}
             <div className="dash-cards">
-              <div className="dash-card">
-                <div className="dash-card-icon">👥</div>
-                <div>
-                  <p className="dash-card-value">
-                    {stats.totalUsers?.toLocaleString()}
-                  </p>
-                  <p className="dash-card-label">Total Users</p>
+              {[
+                { icon: "👥", value: stats.totalUsers,    label: "Total Users"    },
+                { icon: "🩸", value: stats.totalDonors,   label: "Total Donors"   },
+                { icon: "📋", value: stats.openRequests,  label: "Open Requests"  },
+                { icon: "📍", value: stats.citiesCovered, label: "Cities Covered" },
+              ].map((card, i) => (
+                <div className="dash-card" key={i}>
+                  <div className="dash-card-icon">{card.icon}</div>
+                  <div>
+                    <p className="dash-card-value">
+                      {card.value?.toLocaleString() || 0}
+                    </p>
+                    <p className="dash-card-label">{card.label}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="dash-card">
-                <div className="dash-card-icon">🩸</div>
-                <div>
-                  <p className="dash-card-value">
-                    {stats.totalDonors?.toLocaleString()}
-                  </p>
-                  <p className="dash-card-label">Total Donors</p>
-                </div>
-              </div>
-              <div className="dash-card">
-                <div className="dash-card-icon">📋</div>
-                <div>
-                  <p className="dash-card-value">{stats.openRequests}</p>
-                  <p className="dash-card-label">Open Requests</p>
-                </div>
-              </div>
-              <div className="dash-card">
-                <div className="dash-card-icon">📍</div>
-                <div>
-                  <p className="dash-card-value">{stats.citiesCovered}</p>
-                  <p className="dash-card-label">Cities Covered</p>
-                </div>
-              </div>
+              ))}
+            </div>
+
+            {/* Recent Users */}
+            <h3 className="dash-section-title">Recent Registrations</h3>
+            <div className="dash-table-wrapper">
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Blood</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.slice(0, 5).map((u) => (
+                    <tr key={u._id}>
+                      <td style={{ color: "#fff", fontWeight: 600 }}>{u.name}</td>
+                      <td>{u.email}</td>
+                      <td>
+                        <span className="table-blood-badge">{u.bloodGroup}</span>
+                      </td>
+                      <td>
+                        <span className={`role-badge ${
+                          u.isAdmin ? "role-admin" :
+                          u.isDonor ? "role-donor" : "role-user"
+                        }`}>
+                          {u.isAdmin ? "Admin" : u.isDonor ? "Donor" : "User"}
+                        </span>
+                      </td>
+                      <td>{timeAgo(u.createdAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
 
             {/* Recent Requests */}
-            <h3 className="dash-section-title">Recent Requests</h3>
+            <h3 className="dash-section-title" style={{ marginTop: "28px" }}>
+              Recent Blood Requests
+            </h3>
             <div className="dash-table-wrapper">
               <table className="dash-table">
                 <thead>
                   <tr>
                     <th>Patient</th>
-                    <th>Blood Group</th>
+                    <th>Blood</th>
                     <th>Hospital</th>
                     <th>Urgency</th>
-                    <th>Status</th>
+                    <th>Posted</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -189,9 +222,7 @@ const Admin = () => {
                         {req.patientName}
                       </td>
                       <td>
-                        <span className="table-blood-badge">
-                          {req.bloodGroup}
-                        </span>
+                        <span className="table-blood-badge">{req.bloodGroup}</span>
                       </td>
                       <td>{req.hospital}</td>
                       <td>
@@ -203,15 +234,7 @@ const Admin = () => {
                           {req.urgency}
                         </span>
                       </td>
-                      <td>
-                        <span className={`table-status ${
-                          req.status === "Open"
-                            ? "status-active"
-                            : "status-closed"
-                        }`}>
-                          {req.status}
-                        </span>
-                      </td>
+                      <td>{timeAgo(req.createdAt)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -220,13 +243,45 @@ const Admin = () => {
           </div>
         )}
 
-        {/* ── Manage Users ── */}
+        {/* ════ Manage Users ════ */}
         {activeTab === "users" && (
           <div className="dash-section">
-            <h2 className="dash-heading">Manage Users</h2>
-            <p className="dash-subheading">
-              {users.length} registered users
-            </p>
+            <div className="dash-tab-header">
+              <div>
+                <h2 className="dash-heading">Manage Users</h2>
+                <p className="dash-subheading">
+                  {filteredUsers.length} of {users.length} users
+                </p>
+              </div>
+            </div>
+
+            {/* Search + Filter */}
+            <div className="admin-filter-bar">
+              <input
+                type="text"
+                className="admin-search-input"
+                placeholder="🔍 Search by name or email..."
+                value={searchUser}
+                onChange={(e) => setSearchUser(e.target.value)}
+              />
+              <div className="admin-role-filter">
+                {["All", "Admin", "Donor", "User"].map((role) => (
+                  <button
+                    key={role}
+                    className={`filter-tab ${filterRole === role ? "filter-tab-active" : ""}`}
+                    onClick={() => setFilterRole(role)}
+                  >
+                    {role}
+                    <span className="filter-tab-count">
+                      {role === "All"   ? users.length :
+                       role === "Admin" ? users.filter((u) => u.isAdmin).length :
+                       role === "Donor" ? users.filter((u) => u.isDonor && !u.isAdmin).length :
+                       users.filter((u) => !u.isDonor && !u.isAdmin).length}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <div className="dash-table-wrapper">
               <table className="dash-table">
@@ -237,12 +292,14 @@ const Admin = () => {
                     <th>Email</th>
                     <th>Blood</th>
                     <th>City</th>
+                    <th>Phone</th>
                     <th>Role</th>
+                    <th>Joined</th>
                     <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((u, index) => (
+                  {filteredUsers.map((u, index) => (
                     <tr key={u._id}>
                       <td>{index + 1}</td>
                       <td style={{ color: "#fff", fontWeight: 600 }}>
@@ -250,20 +307,19 @@ const Admin = () => {
                       </td>
                       <td>{u.email}</td>
                       <td>
-                        <span className="table-blood-badge">
-                          {u.bloodGroup}
-                        </span>
+                        <span className="table-blood-badge">{u.bloodGroup}</span>
                       </td>
                       <td>{u.city}</td>
+                      <td>{u.phone || "N/A"}</td>
                       <td>
                         <span className={`role-badge ${
-                          u.isAdmin  ? "role-admin"  :
-                          u.isDonor  ? "role-donor"  :
-                          "role-user"
+                          u.isAdmin ? "role-admin" :
+                          u.isDonor ? "role-donor" : "role-user"
                         }`}>
                           {u.isAdmin ? "Admin" : u.isDonor ? "Donor" : "User"}
                         </span>
                       </td>
+                      <td>{timeAgo(u.createdAt)}</td>
                       <td>
                         {!u.isAdmin && (
                           <button
@@ -278,11 +334,17 @@ const Admin = () => {
                   ))}
                 </tbody>
               </table>
+
+              {filteredUsers.length === 0 && (
+                <div className="admin-empty">
+                  <p>No users found</p>
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        {/* ── Blood Requests ── */}
+        {/* ════ Blood Requests ════ */}
         {activeTab === "requests" && (
           <div className="dash-section">
             <h2 className="dash-heading">Blood Requests</h2>
@@ -301,6 +363,7 @@ const Admin = () => {
                     <th>City</th>
                     <th>Urgency</th>
                     <th>Status</th>
+                    <th>Posted</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -312,9 +375,7 @@ const Admin = () => {
                         {req.patientName}
                       </td>
                       <td>
-                        <span className="table-blood-badge">
-                          {req.bloodGroup}
-                        </span>
+                        <span className="table-blood-badge">{req.bloodGroup}</span>
                       </td>
                       <td>{req.hospital}</td>
                       <td>{req.city}</td>
@@ -329,13 +390,12 @@ const Admin = () => {
                       </td>
                       <td>
                         <span className={`table-status ${
-                          req.status === "Open"
-                            ? "status-active"
-                            : "status-closed"
+                          req.status === "Open" ? "status-active" : "status-closed"
                         }`}>
                           {req.status}
                         </span>
                       </td>
+                      <td>{timeAgo(req.createdAt)}</td>
                       <td>
                         <button
                           className="btn-table-action btn-delete"
@@ -348,11 +408,17 @@ const Admin = () => {
                   ))}
                 </tbody>
               </table>
+
+              {requests.length === 0 && (
+                <div className="admin-empty">
+                  <p>No requests found</p>
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        {/* ── Donors List ── */}
+        {/* ════ Donors List ════ */}
         {activeTab === "donors" && (
           <div className="dash-section">
             <h2 className="dash-heading">Donors List</h2>
@@ -370,6 +436,7 @@ const Admin = () => {
                     <th>City</th>
                     <th>Phone</th>
                     <th>Status</th>
+                    <th>Donations</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -391,13 +458,12 @@ const Admin = () => {
                         <td>{donor.phone || "N/A"}</td>
                         <td>
                           <span className={`table-status ${
-                            donor.isAvailable
-                              ? "status-active"
-                              : "status-closed"
+                            donor.isAvailable ? "status-active" : "status-closed"
                           }`}>
                             {donor.isAvailable ? "Available" : "Unavailable"}
                           </span>
                         </td>
+                        <td>{donor.totalDonations || 0}</td>
                         <td>
                           <button
                             className="btn-table-action btn-delete"
@@ -410,6 +476,12 @@ const Admin = () => {
                     ))}
                 </tbody>
               </table>
+
+              {users.filter((u) => u.isDonor).length === 0 && (
+                <div className="admin-empty">
+                  <p>No donors found</p>
+                </div>
+              )}
             </div>
           </div>
         )}

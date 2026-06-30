@@ -1,16 +1,13 @@
+require("dotenv").config({ path: "../.env" });
 const mongoose = require("mongoose");
-const dotenv   = require("dotenv");
 const User     = require("../models/User");
-
-dotenv.config({ path: "../.env" });
 
 const makeAdmin = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
     console.log("MongoDB Connected");
 
-    // তোমার registered email দাও
-    const email = "your-email@gmail.com";
+    const email = "smfahim.ahmed28@gmail.com"; 
 
     const user = await User.findOneAndUpdate(
       { email },

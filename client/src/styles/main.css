@@ -3102,3 +3102,73 @@ body {
 .phone-input-field:focus {
   border-color: transparent !important;
 }
+
+/* ─── ADMIN FILTER BAR ───────────────────────────────────────── */
+.admin-filter-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.admin-search-input {
+  background-color: #1a1a1a;
+  border: 1.5px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.88rem;
+  color: #ffffff;
+  outline: none;
+  min-width: 260px;
+  transition: border-color 0.2s;
+  flex: 1;
+}
+
+.admin-search-input:focus {
+  border-color: #cc0000;
+}
+
+.admin-search-input::placeholder {
+  color: #444444;
+}
+
+.admin-role-filter {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ─── ADMIN EMPTY ────────────────────────────────────────────── */
+.admin-empty {
+  text-align: center;
+  padding: 40px;
+  color: #555555;
+  font-size: 0.9rem;
+}
+
+/* ─── ROLE BADGE ─────────────────────────────────────────────── */
+.role-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.role-admin {
+  background-color: rgba(124, 58, 237, 0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(124, 58, 237, 0.3);
+}
+
+.role-donor {
+  background-color: rgba(204, 0, 0, 0.1);
+  color: #ff4444;
+  border: 1px solid rgba(204, 0, 0, 0.2);
+}
+
+.role-user {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #888888;
+  border: 1px solid #2a2a2a;
+}
