@@ -5,7 +5,21 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
-
+const bdDistricts = [
+  "Bagerhat", "Bandarban", "Barguna", "Barishal", "Bhola",
+  "Bogura", "Brahmanbaria", "Chandpur", "Chapai Nawabganj", "Chattogram",
+  "Chuadanga", "Cox's Bazar", "Cumilla", "Dhaka", "Dinajpur",
+  "Faridpur", "Feni", "Gaibandha", "Gazipur", "Gopalganj",
+  "Habiganj", "Jamalpur", "Jessore", "Jhalokathi", "Jhenaidah",
+  "Joypurhat", "Khagrachhari", "Khulna", "Kishoreganj", "Kurigram",
+  "Kushtia", "Lakshmipur", "Lalmonirhat", "Madaripur", "Magura",
+  "Manikganj", "Meherpur", "Moulvibazar", "Munshiganj", "Mymensingh",
+  "Naogaon", "Narail", "Narayanganj", "Narsingdi", "Natore",
+  "Netrokona", "Nilphamari", "Noakhali", "Pabna", "Panchagarh",
+  "Patuakhali", "Pirojpur", "Rajbari", "Rajshahi", "Rangamati",
+  "Rangpur", "Satkhira", "Shariatpur", "Sherpur", "Sirajganj",
+  "Sunamganj", "Sylhet", "Tangail", "Thakurgaon",
+];
 // Blood compatibility data
 const compatibility = {
   "A+":  { donateTo: ["A+", "AB+"],                    receiveFrom: ["A+", "A-", "O+", "O-"] },
@@ -25,7 +39,9 @@ const Donors = () => {
   const [bloodGroup, setBloodGroup] = useState("");
   const [city, setCity]             = useState("");
   const [searched, setSearched]     = useState(false);
-  const [selected, setSelected]     = useState(null); // ← Modal donor
+  const [selected, setSelected]     = useState(null); 
+  const [citySuggestions, setCitySuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -69,6 +85,27 @@ const Donors = () => {
     navigate("/donors");
   };
 
+  const handleCityChange = (e) => {
+  const val = e.target.value;
+  setCity(val);
+  if (val.length > 0) {
+    const filtered = bdDistricts.filter((d) =>
+      d.toLowerCase().startsWith(val.toLowerCase())
+    );
+    setCitySuggestions(filtered);
+    setShowSuggestions(true);
+  } else {
+    setCitySuggestions([]);
+    setShowSuggestions(false);
+  }
+};
+
+const handleSelectCity = (district) => {
+  setCity(district);
+  setCitySuggestions([]);
+  setShowSuggestions(false);
+};
+
   return (
     <div>
       <Navbar />
@@ -96,14 +133,35 @@ const Donors = () => {
             ))}
           </select>
 
-          <input
-            type="text"
-            className="search-input donors-input"
-            placeholder="Search by city (e.g. Dhaka)"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          />
+          <div className="city-input-wrapper">
+            <input
+              type="text"
+              className="search-input donors-input"
+              placeholder="Search by city (e.g. Dhaka)"
+              value={city}
+              onChange={handleCityChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter")  handleSearch();
+                if (e.key === "Escape") setShowSuggestions(false);
+              }}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+              onFocus={() => city.length > 0 && setShowSuggestions(true)}
+              autoComplete="off"
+            />
+            {showSuggestions && citySuggestions.length > 0 && (
+              <ul className="city-suggestions">
+                {citySuggestions.map((district) => (
+                  <li
+                    key={district}
+                    className="city-suggestion-item"
+                    onMouseDown={() => handleSelectCity(district)}
+                  >
+                    📍 {district}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
           <button className="btn-search donors-btn" onClick={handleSearch}>
             🔍 Search
