@@ -27,7 +27,7 @@ const Register = () => {
     confirmPassword: "",
     bloodGroup:      "",
     city:            "",
-    phone:           "",
+    phone:           "+88",
     isDonor:         false,
   });
 
@@ -142,7 +142,7 @@ const Register = () => {
       });
 
       localStorage.setItem("bloodlinkUser", JSON.stringify(data));
-      navigate("/dashboard");
+      window.location.href = "/dashboard"; 
 
     } catch (err) {
       if (err.code === "auth/invalid-verification-code") {
@@ -201,15 +201,23 @@ const Register = () => {
                     onChange={handleChange}
                   />
                 </div>
-                <div className="form-group">
-                  <label className="form-label">Phone * (with country code)</label>
-                  <input
-                    type="text" name="phone"
-                    className="form-input"
-                    placeholder="+8801XXXXXXXXX"
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
+                  <div className="form-group">
+                  <label className="form-label">Phone * </label>
+                  <div className="phone-input-wrapper">
+                    <span className="phone-prefix">+88</span>
+                    <input
+                      type="text"
+                      name="phone"
+                      className="form-input phone-input-field"
+                      placeholder="01XXXXXXXXX"
+                      value={formData.phone.replace("+88", "")}
+                      onChange={(e) => {
+                        const num = e.target.value.replace(/\D/g, "");
+                        setFormData({ ...formData, phone: "+88" + num });
+                      }}
+                      maxLength={11}
+                    />
+                  </div>
                 </div>
               </div>
 

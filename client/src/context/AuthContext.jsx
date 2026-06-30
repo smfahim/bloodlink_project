@@ -16,11 +16,11 @@ export const AuthProvider = ({ children }) => {
 
   // Register
   const register = async (formData) => {
-    const { data } = await API.post("/auth/register", formData);
-    localStorage.setItem("bloodlinkUser", JSON.stringify(data));
-    setUser(data);
-    return data;
-  };
+  const { data } = await API.post("/auth/register", formData);
+  localStorage.setItem("bloodlinkUser", JSON.stringify(data));
+  setUser(data);
+  return data;
+};
 
   // Login
   const login = async (formData) => {
