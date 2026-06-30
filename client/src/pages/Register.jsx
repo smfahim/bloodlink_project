@@ -1,17 +1,24 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import API from "../api/axios";
+import React, { useState, useRef } from "react";
+import { useNavigate, Link }        from "react-router-dom";
+import {
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+} from "firebase/auth";
+import { auth } from "../config/firebase";
+import API       from "../api/axios";
 
 const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
 const Register = () => {
-  const navigate              = useNavigate();
-  const [step, setStep]       = useState(1); // 1=form, 2=otp
-  const [error, setError]     = useState("");
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [resendTimer, setResendTimer] = useState(0);
-  const [otp, setOtp]         = useState("");
+  const navigate                          = useNavigate();
+  const [step, setStep]                   = useState(1);
+  const [error, setError]                 = useState("");
+  const [success, setSuccess]             = useState("");
+  const [loading, setLoading]             = useState(false);
+  const [otp, setOtp]                     = useState("");
+  const [confirmResult, setConfirmResult] = useState(null);
+  const [resendTimer, setResendTimer]     = useState(0);
+  const recaptchaRef                      = useRef(null);
 
   const [formData, setFormData] = useState({
     name:            "",
@@ -32,7 +39,7 @@ const Register = () => {
     });
   };
 
-  // Timer for resend
+  // Timer
   const startTimer = () => {
     setResendTimer(60);
     const interval = setInterval(() => {
@@ -43,13 +50,25 @@ const Register = () => {
     }, 1000);
   };
 
-  // Step 1 — Submit form → Send OTP
+  // Setup Recaptcha
+  const setupRecaptcha = () => {
+    if (!recaptchaRef.current) {
+      recaptchaRef.current = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        { size: "invisible" }
+      );
+    }
+  };
+
+  // Step 1 — Validate + Send SMS OTP
   const handleSendOTP = async () => {
     setError("");
 
-    if (!formData.name || !formData.email ||
-        !formData.password || !formData.bloodGroup || !formData.city) {
-      return setError("Please fill all required fields");
+    if (!formData.name   || !formData.email ||
+        !formData.password || !formData.bloodGroup ||
+        !formData.city   || !formData.phone) {
+      return setError("Please fill all required fields including phone");
     }
     if (formData.password !== formData.confirmPassword) {
       return setError("Passwords do not match!");
@@ -57,23 +76,35 @@ const Register = () => {
     if (formData.password.length < 6) {
       return setError("Password must be at least 6 characters");
     }
+    if (!formData.phone.startsWith("+")) {
+      return setError("Phone must include country code e.g. +8801XXXXXXXXX");
+    }
 
     setLoading(true);
     try {
-      await API.post("/auth/register", {
-        name:       formData.name,
-        email:      formData.email,
-        password:   formData.password,
-        bloodGroup: formData.bloodGroup,
-        city:       formData.city,
-        phone:      formData.phone,
-        isDonor:    formData.isDonor,
-      });
-      setSuccess(`OTP sent to ${formData.email}`);
+      setupRecaptcha();
+
+      const confirmation = await signInWithPhoneNumber(
+        auth,
+        formData.phone,
+        recaptchaRef.current
+      );
+
+      setConfirmResult(confirmation);
       setStep(2);
+      setSuccess(`OTP sent to ${formData.phone}`);
       startTimer();
+
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      console.error(err);
+      if (err.code === "auth/invalid-phone-number") {
+        setError("Invalid phone number. Use format: +8801XXXXXXXXX");
+      } else if (err.code === "auth/too-many-requests") {
+        setError("Too many attempts. Please try again later.");
+      } else {
+        setError(err.message || "Failed to send OTP");
+      }
+      recaptchaRef.current = null;
     } finally {
       setLoading(false);
     }
@@ -81,36 +112,26 @@ const Register = () => {
 
   // Resend OTP
   const handleResend = async () => {
+    recaptchaRef.current = null;
+    setSuccess("");
     setError("");
-    setLoading(true);
-    try {
-      await API.post("/auth/register", {
-        name:       formData.name,
-        email:      formData.email,
-        password:   formData.password,
-        bloodGroup: formData.bloodGroup,
-        city:       formData.city,
-        phone:      formData.phone,
-        isDonor:    formData.isDonor,
-      });
-      setSuccess("OTP resent successfully!");
-      startTimer();
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to resend OTP");
-    } finally {
-      setLoading(false);
-    }
+    await handleSendOTP();
   };
 
-  // Step 2 — Verify OTP → Create Account
+  // Step 2 — Verify OTP + Create Account
   const handleVerifyOTP = async () => {
     if (!otp || otp.length !== 6) {
       return setError("Please enter the 6-digit OTP");
     }
     setError("");
     setLoading(true);
+
     try {
-      const { data } = await API.post("/auth/verify-register", {
+      // Firebase OTP verify
+      await confirmResult.confirm(otp);
+
+      // Account create
+      const { data } = await API.post("/auth/register", {
         name:       formData.name,
         email:      formData.email,
         password:   formData.password,
@@ -118,12 +139,17 @@ const Register = () => {
         city:       formData.city,
         phone:      formData.phone,
         isDonor:    formData.isDonor,
-        otp,
       });
+
       localStorage.setItem("bloodlinkUser", JSON.stringify(data));
       navigate("/dashboard");
+
     } catch (err) {
-      setError(err.response?.data?.message || "Invalid OTP");
+      if (err.code === "auth/invalid-verification-code") {
+        setError("Invalid OTP. Please try again.");
+      } else {
+        setError(err.response?.data?.message || err.message || "Verification failed");
+      }
     } finally {
       setLoading(false);
     }
@@ -132,6 +158,9 @@ const Register = () => {
   return (
     <div className="auth-page">
       <div className="auth-card register-card">
+
+        {/* Invisible Recaptcha */}
+        <div id="recaptcha-container"></div>
 
         <div className="auth-logo">
           Blood<span className="logo-accent">Link</span>
@@ -146,14 +175,14 @@ const Register = () => {
           <div className="reg-step-line"></div>
           <div className={`reg-step ${step >= 2 ? "reg-step-active" : ""}`}>
             <div className="reg-step-circle">2</div>
-            <span>Verify Email</span>
+            <span>Verify Phone</span>
           </div>
         </div>
 
         {error   && <div className="auth-error">{error}</div>}
         {success && <div className="auth-success">{success}</div>}
 
-        {/* ── Step 1 — Registration Form ── */}
+        {/* ── Step 1 — Form ── */}
         {step === 1 && (
           <>
             <h2 className="auth-title">Create Account</h2>
@@ -173,11 +202,11 @@ const Register = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Phone Number</label>
+                  <label className="form-label">Phone * (with country code)</label>
                   <input
                     type="text" name="phone"
                     className="form-input"
-                    placeholder="01XXXXXXXXX"
+                    placeholder="+8801XXXXXXXXX"
                     value={formData.phone}
                     onChange={handleChange}
                   />
@@ -263,7 +292,7 @@ const Register = () => {
                   onClick={handleSendOTP}
                   disabled={loading}
                 >
-                  {loading ? "Sending OTP..." : "📧 Continue with OTP"}
+                  {loading ? "Sending OTP..." : "📱 Continue with SMS OTP"}
                 </button>
                 <Link to="/" className="btn-cancel">
                   ✕ Cancel
@@ -274,20 +303,26 @@ const Register = () => {
           </>
         )}
 
-        {/* ── Step 2 — OTP Verification ── */}
+        {/* ── Step 2 — OTP ── */}
         {step === 2 && (
           <>
-            <h2 className="auth-title">Verify Your Email</h2>
+            <h2 className="auth-title">Verify Your Phone</h2>
             <p className="auth-subtitle">
-              We sent a 6-digit OTP to your email
+              We sent a 6-digit OTP via SMS
             </p>
 
             <div className="otp-email-display">
               <span>OTP sent to</span>
-              <strong>{formData.email}</strong>
+              <strong>{formData.phone}</strong>
               <button
                 className="otp-change-email"
-                onClick={() => { setStep(1); setOtp(""); setSuccess(""); setError(""); }}
+                onClick={() => {
+                  setStep(1);
+                  setOtp("");
+                  setSuccess("");
+                  setError("");
+                  recaptchaRef.current = null;
+                }}
               >
                 Change
               </button>
@@ -310,7 +345,7 @@ const Register = () => {
                   }
                 />
                 <p className="otp-hint">
-                  Check your inbox — expires in 5 minutes
+                  Check your SMS — expires in 5 minutes
                 </p>
               </div>
 
@@ -338,7 +373,11 @@ const Register = () => {
                 )}
               </div>
 
-              <Link to="/" className="btn-cancel" style={{ textAlign: "center" }}>
+              <Link
+                to="/"
+                className="btn-cancel"
+                style={{ textAlign: "center" }}
+              >
                 ✕ Cancel Registration
               </Link>
 

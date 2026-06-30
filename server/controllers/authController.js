@@ -1,17 +1,11 @@
-const jwt              = require("jsonwebtoken");
-const User             = require("../models/User");
-const OTP              = require("../models/OTP");
-const { sendOTPEmail } = require("../config/email");
+const jwt  = require("jsonwebtoken");
+const User = require("../models/User");
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
-const generateOTP = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-};
-
-// @route POST /api/auth/register — Send OTP
+// @route  POST /api/auth/register
 const registerUser = async (req, res) => {
   try {
     const {
@@ -19,8 +13,6 @@ const registerUser = async (req, res) => {
       bloodGroup, city, phone, isDonor,
     } = req.body;
 
-    console.log("=== REGISTER CALLED ===", email);
-
     if (!name || !email || !password || !bloodGroup || !city) {
       return res.status(400).json({ message: "Please fill all fields" });
     }
@@ -29,84 +21,6 @@ const registerUser = async (req, res) => {
     if (userExists) {
       return res.status(400).json({ message: "Email already registered" });
     }
-
-    await OTP.deleteMany({ email });
-    const otp = generateOTP();
-    console.log("=== OTP GENERATED ===", otp);
-
-    await OTP.create({ email, otp });
-    console.log("=== OTP SAVED TO DB ===");
-
-    await sendOTPEmail(email, otp, name);
-    console.log("=== EMAIL SENT ===");
-
-    return res.status(200).json({
-      message: "OTP sent to your email",
-      email,
-    });
-
-  } catch (error) {
-    console.error("=== REGISTER ERROR ===", error);
-    return res.status(500).json({ message: error.message });
-  }
-};const registerUser = async (req, res) => {
-  try {
-    const {
-      name, email, password,
-      bloodGroup, city, phone, isDonor,
-    } = req.body;
-
-    console.log("=== REGISTER CALLED ===", email);
-
-    if (!name || !email || !password || !bloodGroup || !city) {
-      return res.status(400).json({ message: "Please fill all fields" });
-    }
-
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ message: "Email already registered" });
-    }
-
-    await OTP.deleteMany({ email });
-    const otp = generateOTP();
-    console.log("=== OTP GENERATED ===", otp);
-
-    await OTP.create({ email, otp });
-    console.log("=== OTP SAVED TO DB ===");
-
-    await sendOTPEmail(email, otp, name);
-    console.log("=== EMAIL SENT ===");
-
-    return res.status(200).json({
-      message: "OTP sent to your email",
-      email,
-    });
-
-  } catch (error) {
-    console.error("=== REGISTER ERROR ===", error);
-    return res.status(500).json({ message: error.message });
-  }
-};
-
-// @route  POST /api/auth/verify-register — Verify OTP + Create Account
-const verifyRegister = async (req, res) => {
-  try {
-    const {
-      name, email, password,
-      bloodGroup, city, phone,
-      isDonor, otp,
-    } = req.body;
-
-    if (!otp) {
-      return res.status(400).json({ message: "OTP is required" });
-    }
-
-    const otpRecord = await OTP.findOne({ email, otp });
-    if (!otpRecord) {
-      return res.status(400).json({ message: "Invalid or expired OTP" });
-    }
-
-    await OTP.deleteMany({ email });
 
     const user = new User({
       name, email, password,
@@ -129,7 +43,7 @@ const verifyRegister = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("VERIFY REGISTER ERROR:", error);
+    console.error("REGISTER ERROR:", error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -210,7 +124,6 @@ const updateProfile = async (req, res) => {
 
 module.exports = {
   registerUser,
-  verifyRegister,
   loginUser,
   getMe,
   updateProfile,
