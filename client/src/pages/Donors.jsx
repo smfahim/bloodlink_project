@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import API from "../api/axios";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import { useLocation, useNavigate }   from "react-router-dom";
+import API                            from "../api/axios";
+import Navbar                         from "../components/Navbar";
+import Footer                         from "../components/Footer";
 
 const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
+
 const bdDistricts = [
   "Bagerhat", "Bandarban", "Barguna", "Barishal", "Bhola",
   "Bogura", "Brahmanbaria", "Chandpur", "Chapai Nawabganj", "Chattogram",
@@ -20,26 +21,26 @@ const bdDistricts = [
   "Rangpur", "Satkhira", "Shariatpur", "Sherpur", "Sirajganj",
   "Sunamganj", "Sylhet", "Tangail", "Thakurgaon",
 ];
-// Blood compatibility data
+
 const compatibility = {
-  "A+":  { donateTo: ["A+", "AB+"],                    receiveFrom: ["A+", "A-", "O+", "O-"] },
-  "A-":  { donateTo: ["A+", "A-", "AB+", "AB-"],       receiveFrom: ["A-", "O-"] },
-  "B+":  { donateTo: ["B+", "AB+"],                    receiveFrom: ["B+", "B-", "O+", "O-"] },
-  "B-":  { donateTo: ["B+", "B-", "AB+", "AB-"],       receiveFrom: ["B-", "O-"] },
-  "O+":  { donateTo: ["A+", "B+", "O+", "AB+"],        receiveFrom: ["O+", "O-"] },
+  "A+":  { donateTo: ["A+", "AB+"],                              receiveFrom: ["A+", "A-", "O+", "O-"] },
+  "A-":  { donateTo: ["A+", "A-", "AB+", "AB-"],                receiveFrom: ["A-", "O-"] },
+  "B+":  { donateTo: ["B+", "AB+"],                             receiveFrom: ["B+", "B-", "O+", "O-"] },
+  "B-":  { donateTo: ["B+", "B-", "AB+", "AB-"],                receiveFrom: ["B-", "O-"] },
+  "O+":  { donateTo: ["A+", "B+", "O+", "AB+"],                 receiveFrom: ["O+", "O-"] },
   "O-":  { donateTo: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"], receiveFrom: ["O-"] },
-  "AB+": { donateTo: ["AB+"],                          receiveFrom: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"] },
-  "AB-": { donateTo: ["AB+", "AB-"],                   receiveFrom: ["A-", "B-", "O-", "AB-"] },
+  "AB+": { donateTo: ["AB+"],                                   receiveFrom: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"] },
+  "AB-": { donateTo: ["AB+", "AB-"],                            receiveFrom: ["A-", "B-", "O-", "AB-"] },
 };
 
 const Donors = () => {
-  const [donors, setDonors]         = useState([]);
-  const [loading, setLoading]       = useState(false);
-  const [error, setError]           = useState("");
-  const [bloodGroup, setBloodGroup] = useState("");
-  const [city, setCity]             = useState("");
-  const [searched, setSearched]     = useState(false);
-  const [selected, setSelected]     = useState(null); 
+  const [donors, setDonors]                   = useState([]);
+  const [loading, setLoading]                 = useState(false);
+  const [error, setError]                     = useState("");
+  const [bloodGroup, setBloodGroup]           = useState("");
+  const [city, setCity]                       = useState("");
+  const [searched, setSearched]               = useState(false);
+  const [selected, setSelected]               = useState(null);
   const [citySuggestions, setCitySuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -77,34 +78,37 @@ const Donors = () => {
     if (bloodGroup) params.append("bloodGroup", bloodGroup);
     if (city)       params.append("city", city);
     navigate(`/donors?${params.toString()}`);
+    setShowSuggestions(false);
   };
 
   const handleReset = () => {
     setBloodGroup("");
     setCity("");
     navigate("/donors");
+    setCitySuggestions([]);
+    setShowSuggestions(false);
   };
 
   const handleCityChange = (e) => {
-  const val = e.target.value;
-  setCity(val);
-  if (val.length > 0) {
-    const filtered = bdDistricts.filter((d) =>
-      d.toLowerCase().startsWith(val.toLowerCase())
-    );
-    setCitySuggestions(filtered);
-    setShowSuggestions(true);
-  } else {
+    const val = e.target.value;
+    setCity(val);
+    if (val.length > 0) {
+      const filtered = bdDistricts.filter((d) =>
+        d.toLowerCase().startsWith(val.toLowerCase())
+      );
+      setCitySuggestions(filtered);
+      setShowSuggestions(true);
+    } else {
+      setCitySuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSelectCity = (district) => {
+    setCity(district);
     setCitySuggestions([]);
     setShowSuggestions(false);
-  }
-};
-
-const handleSelectCity = (district) => {
-  setCity(district);
-  setCitySuggestions([]);
-  setShowSuggestions(false);
-};
+  };
 
   return (
     <div>
@@ -133,6 +137,7 @@ const handleSelectCity = (district) => {
             ))}
           </select>
 
+          {/* City Input with Suggestions */}
           <div className="city-input-wrapper">
             <input
               type="text"
@@ -144,8 +149,12 @@ const handleSelectCity = (district) => {
                 if (e.key === "Enter")  handleSearch();
                 if (e.key === "Escape") setShowSuggestions(false);
               }}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-              onFocus={() => city.length > 0 && setShowSuggestions(true)}
+              onBlur={() =>
+                setTimeout(() => setShowSuggestions(false), 150)
+              }
+              onFocus={() =>
+                city.length > 0 && setShowSuggestions(true)
+              }
               autoComplete="off"
             />
             {showSuggestions && citySuggestions.length > 0 && (
@@ -163,7 +172,10 @@ const handleSelectCity = (district) => {
             )}
           </div>
 
-          <button className="btn-search donors-btn" onClick={handleSearch}>
+          <button
+            className="btn-search donors-btn"
+            onClick={handleSearch}
+          >
             🔍 Search
           </button>
 
@@ -253,19 +265,14 @@ const handleSelectCity = (district) => {
             className="modal-card donor-modal"
             onClick={(e) => e.stopPropagation()}
           >
-
-            {/* Modal Header */}
             <div className="modal-header">
               <h2 className="modal-title">Donor Details</h2>
               <button
                 className="modal-close"
                 onClick={() => setSelected(null)}
-              >
-                ✕
-              </button>
+              >✕</button>
             </div>
 
-            {/* Donor Info */}
             <div className="donor-modal-top">
               <div
                 className="blood-badge"
@@ -282,7 +289,6 @@ const handleSelectCity = (district) => {
               </div>
             </div>
 
-            {/* Info Grid */}
             <div className="donor-modal-grid">
               <div className="modal-info-item">
                 <p className="modal-info-label">📍 City</p>
@@ -320,7 +326,6 @@ const handleSelectCity = (district) => {
               </div>
             </div>
 
-            {/* Blood Compatibility */}
             {compatibility[selected.bloodGroup] && (
               <div className="modal-compatibility">
                 <p className="modal-compat-title">🔄 Blood Compatibility</p>
@@ -349,7 +354,6 @@ const handleSelectCity = (district) => {
               </div>
             )}
 
-            {/* Action Buttons */}
             <div className="modal-actions">
               <button
                 className="btn-auth"
