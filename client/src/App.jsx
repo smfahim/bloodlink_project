@@ -10,7 +10,7 @@ import Requests      from "./pages/Requests";
 import About         from "./pages/About";
 import Contact       from "./pages/Contact";
 import LoadingScreen from "./components/LoadingScreen";
-import AdminRoute    from "./components/AdminRoute";   
+   
 
 function App() {
   const [loading, setLoading] = useState(true);
